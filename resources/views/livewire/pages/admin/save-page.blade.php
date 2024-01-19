@@ -27,9 +27,7 @@ mount(function (Request $request) {
 $save = function () {
     $this->validate([
         'title' => 'required',
-
-        'slug' => 'required',
-
+        'slug' => 'required|alpha_dash|max:255,unique:pages,slug,' . $this->id,
         'content' => 'required',
     ]);
 
@@ -49,6 +47,16 @@ $save = function () {
     }
 };
 
+$delete = function () {
+    if (!$this->id) {
+        return;
+    }
+    $page = Page::find($this->id);
+
+    if ($page->delete()) {
+        return $this->dispatch('alert', type: 'success', message: 'Deleted');
+    }
+};
 ?>
 
 <div class="space-y-5" x-data="{ imgslug: $wire.thumbnail }">
@@ -67,6 +75,13 @@ $save = function () {
         <span wire:loading.remove wire:target='save'>Save</span>
         <span wire:loading wire:target='save'>saving...</span>
     </x-primary-button>
+
+    @if ($id)
+        <x-secondary-button wire:loading.attr='disabled' wire:x-confirm="Are you sure?" wire:click='delete'>
+            <span wire:loading.remove wire:target='delete'>delete</span>
+            <span wire:loading wire:target='delete'>deleting...</span>
+        </x-secondary-button>
+    @endif
 
     <x-section>
 

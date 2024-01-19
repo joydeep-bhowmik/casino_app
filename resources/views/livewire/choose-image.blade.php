@@ -23,7 +23,7 @@ $load = function () {
     $images = Image::orderBy('created_at', 'desc')->paginate($this->perPage, ['*'], null, $this->page);
 
     foreach ($images as $image) {
-        $this->photos->push($image);
+        $this->photos->prepend($image);
     }
     if (!$images->hasMorePages()) {
         $this->hasMore = false;
@@ -39,7 +39,7 @@ $save = function () {
 
     if ($image->save()) {
         if ($this->photo->storeAs('uploads', $image->id . $filename, 'public')) {
-            $this->photos->push($image);
+            $this->photos->prepend($image);
         }
     }
 };

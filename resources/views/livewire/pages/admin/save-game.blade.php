@@ -83,7 +83,7 @@ $delete = function () {
     </x-primary-button>
 
     @if ($id)
-        <x-secondary-button wire:loading.attr='disabled' wire:click='delete'>
+        <x-secondary-button wire:loading.attr='disabled' wire:x-confirm="Are you sure?" wire:click='delete'>
             <span wire:loading.remove wire:target='delete'>delete</span>
             <span wire:loading wire:target='delete'>deleting...</span>
         </x-secondary-button>
