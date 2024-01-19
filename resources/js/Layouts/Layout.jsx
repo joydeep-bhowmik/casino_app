@@ -19,9 +19,11 @@ export default function Layout({ children, ...props }) {
         showNotificationBox: false,
     });
     const { pages, socials } = usePage().props.data;
-    console.log(pages, socials);
+
+    console.log(pages);
+
     return (
-        <div className="bg min-h-screen">
+        <div className=" min-h-screen">
             <nav className="flex items-center p-5 lg:p-10 gap-5  text-[#959595] text-sm">
                 <ApplicationLogo />
 
@@ -45,7 +47,7 @@ export default function Layout({ children, ...props }) {
                             className="flex items-center gap-3 hover-underline-animation"
                         >
                             <UsersIcon className="-mt-1 h-6 w-6" />
-                            AFFILIATED
+                            Affiliated
                         </Link>
 
                         <Link
@@ -115,8 +117,42 @@ export default function Layout({ children, ...props }) {
                 </div>
             </nav>
 
-            <main>{children}</main>
-            <footer></footer>
+            <main className="min-h-screen">{children}</main>
+
+            <footer className="bg mt-10">
+                <div className="border-b border-[#292929] flex flex-col gap-8 md:grid md:grid-cols-[auto_auto_auto] p-8">
+                    <div className="flex  gap-5">
+                        {socials.map((s) => (
+                            <a href={s.link} key={s.id} target="_blank">
+                                <img
+                                    src={s.image_url}
+                                    alt=""
+                                    className="h-6 w-6"
+                                />
+                            </a>
+                        ))}
+                    </div>
+                    <div className="flex lg:flex-row flex-col gap-8  break-inside-avoid-column">
+                        {pages.map((p) => (
+                            <Link
+                                href={p.slug}
+                                key={p.slug}
+                                className="uppercase"
+                            >
+                                {p.title}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+                <div className="flex md:gap-28 md:flex-row flex-col gap-8 items-center p-8">
+                    <ApplicationLogo />
+
+                    <p>
+                        Copyright © {new Date().getFullYear()}{" "}
+                        {window.location.host}. All rights reserved.
+                    </p>
+                </div>
+            </footer>
         </div>
     );
 }

@@ -51,7 +51,7 @@ $delete = function () {
     if (!$this->id) {
         return;
     }
-    $social::find($this->id);
+    $social=Social::find($this->id);
 
     if ($social->delete()) {
         return $this->dispatch('alert', type: 'danger', message: 'social Deleted!');
