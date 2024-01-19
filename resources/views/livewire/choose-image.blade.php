@@ -122,19 +122,20 @@ with(function () {
 
             @if (count($photos))
                 @foreach ($photos as $image)
-                    <div class="relative h-32 w-32 cursor-pointer border">
+                    <div class="relative h-32 w-32 cursor-pointer border" wire:key='{{ $image->id }}'>
 
-                        <button class="absolute -right-4 -top-4 rounded-full border bg-white p-2" type="button"
-                            wire:x-confirm="Are you sure? this can't be undone!"
+                        <button
+                            class="absolute -right-4 -top-4 grid h-6 w-6 place-items-center rounded-full border bg-white"
+                            type="button" wire:x-confirm="Are you sure? this can't be undone!"
                             wire:click="delete('{{ $image->id }}')">
 
-                            <svg class="h-6 w-6" wire:loading.remove wire:target="delete('{{ $image->id }}')"
+                            <svg class="h-4 w-4" wire:loading.remove wire:target="delete('{{ $image->id }}')"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                             </svg>
 
-                            <svg class="h-6 w-6 animate-spin" wire:loading wire:target="delete('{{ $image->id }}')"
+                            <svg class="h-4 w-4 animate-spin" wire:loading wire:target="delete('{{ $image->id }}')"
                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M18.364 5.63604L16.9497 7.05025C15.683 5.7835 13.933 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19C15.866 19 19 15.866 19 12H21C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.4853 3 16.7353 4.00736 18.364 5.63604Z">

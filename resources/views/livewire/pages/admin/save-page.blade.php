@@ -2,9 +2,11 @@
 
 use App\Models\Page;
 use Illuminate\Http\Request;
-use function Livewire\Volt\{state, mount};
+use function Livewire\Volt\{state, mount, title};
 
 state(['id', 'title', 'content', 'slug']);
+
+title(fn() => 'Page' . ' ' . ($this->id ? 'Update ' . $this->id : 'Create'));
 
 mount(function (Request $request) {
     if ($request->id) {

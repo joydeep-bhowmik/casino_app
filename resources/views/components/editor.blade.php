@@ -7,7 +7,6 @@
         this.mdEditor = new markletEditor({
             el: '#editor_{{ $id }}',
             previewEl: '#preview_{{ $id }}',
-
             parserFunction: marked.parse
         });
 
@@ -17,6 +16,11 @@
 
         });
 
+        setTimeout(() => {
+
+            this.mdEditor.editor.dispatchEvent(new Event('input'));
+
+        }, 500)
 
     },
 

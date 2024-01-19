@@ -2,9 +2,11 @@
 
 use App\Models\Game;
 use Illuminate\Http\Request;
-use function Livewire\Volt\{state, mount};
+use function Livewire\Volt\{state, mount, title};
 
 state(['id', 'name', 'thumbnail', 'description', 'url']);
+
+title(fn() => 'Game' . ' ' . ($this->id ? 'Update ' . $this->id : 'Create'));
 
 mount(function (Request $request) {
     if ($request->id) {
@@ -88,28 +90,38 @@ $delete = function () {
             <span wire:loading wire:target='delete'>deleting...</span>
         </x-secondary-button>
     @endif
+    <div class="flex flex-col-reverse gap-5 lg:flex-row">
 
-    <x-section>
+        <x-section class="w-full">
 
-        <div class="space-y-5">
+            <div class="space-y-5">
 
-            <livewire:choose-image target="#game-image" />
+                <x-input label="Name" wire:model='name' :error="$errors->first('name')" />
 
-            <img class="w-96" src="" alt="" :src="imgUrl" x-show="imgUrl">
+                <x-input label="Url" wire:model='url' :error="$errors->first('url')" />
 
-            <input class="hidden" id="game-image" type="text" wire:model='thumbnail' x-model="imgUrl">
+                <x-editor wire:model='description' :error="$errors->first('description')" />
 
-            @error('thumbnail')
-                <div class="text-sm text-red-500">{{ $message }}</div>
-            @enderror
+            </div>
 
-            <x-input label="Name" wire:model='name' :error="$errors->first('name')" />
+        </x-section>
 
-            <x-input label="Url" wire:model='url' :error="$errors->first('url')" />
+        <div class="lg:max-w-96 w-full">
+            <x-section class="w-full" title="image">
 
-            <x-editor wire:model='description' :error="$errors->first('description')" />
+                <livewire:choose-image target="#game-image" />
+
+                <img class="w-full" src="" alt="" :src="imgUrl" x-show="imgUrl">
+
+                <input class="hidden" id="game-image" type="text" wire:model='thumbnail' x-model="imgUrl">
+
+                @error('thumbnail')
+                    <div class="text-sm text-red-500">{{ $message }}</div>
+                @enderror
+
+            </x-section>
 
         </div>
 
-    </x-section>
+    </div>
 </div>

@@ -2,9 +2,11 @@
 
 use App\Models\Suitcase;
 use Illuminate\Http\Request;
-use function Livewire\Volt\{state, mount};
+use function Livewire\Volt\{state, mount, title};
 
 state(['id', 'name', 'slug', 'price', 'compare_at_price', 'image', 'description']);
+
+title(fn() => 'Suitcase' . ' ' . ($this->id ? 'Update ' . $this->id : 'Create'));
 
 mount(function (Request $request) {
     if ($request->id) {
@@ -100,31 +102,41 @@ $delete = function () {
         </x-secondary-button>
     @endif
 
-    <x-section>
+    <div class="flex flex-col-reverse gap-5 lg:flex-row">
 
-        <div class="space-y-5" x-data="{ imgUrl: $wire.image }">
+        <x-section class="w-full">
 
-            <livewire:choose-image target="#Suitcase-image" />
+            <div class="space-y-5">
 
-            <img class="w-96" src="" alt="" :src="imgUrl" x-show="imgUrl">
+                <x-input label="Name" wire:model="name" :error="$errors->first('name')" />
 
-            <input class="hidden" id="Suitcase-image" type="text" wire:model='image' x-model="imgUrl">
+                <x-input label="Slug" wire:model="slug" :error="$errors->first('slug')" />
 
-            @error('image')
-                <div class="text-sm text-red-500">{{ $message }}</div>
-            @enderror
+                <x-input type="number" label="Price" wire:model="price" :error="$errors->first('price')" />
 
-            <x-input label="Name" wire:model="name" :error="$errors->first('name')" />
+                <x-input type="number" label="Compare At Price" wire:model="compare_at_price" :error="$errors->first('compare_at_price')" />
 
-            <x-input label="Slug" wire:model="slug" :error="$errors->first('slug')" />
+                <x-editor wire:model='description' :error="$errors->first('description')" />
 
-            <x-input type="number" label="Price" wire:model="price" :error="$errors->first('price')" />
+            </div>
 
-            <x-input type="number" label="Compare At Price" wire:model="compare_at_price" :error="$errors->first('compare_at_price')" />
+        </x-section>
 
-            <x-editor wire:model='description' :error="$errors->first('description')" />
+        <div class="lg:max-w-96 w-full">
+            <x-section class="w-full" title="image">
+
+                <livewire:choose-image target="#Suitcase-image" />
+
+                <img class="w-full" src="" alt="" :src="imgUrl" x-show="imgUrl">
+
+                <input class="hidden" id="Suitcase-image" type="text" wire:model='image' x-model="imgUrl">
+
+                @error('image')
+                    <div class="text-sm text-red-500">{{ $message }}</div>
+                @enderror
+            </x-section>
 
         </div>
 
-    </x-section>
+    </div>
 </div>

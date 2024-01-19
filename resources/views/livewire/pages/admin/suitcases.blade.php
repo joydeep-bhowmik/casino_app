@@ -1,8 +1,9 @@
 <?php
 
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, title};
 
 //
+title('All Suitcases');
 
 ?>
 
@@ -17,7 +18,7 @@ use function Livewire\Volt\{state};
         <x-primary-button> New suitcase</x-primary-button>
     </a>
 
-    <x-section title="suitcases">
+    <x-section title="Suitcases">
         <livewire:datatables.suitcases-table />
     </x-section>
 </div>

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('compare_at_price', 10, 2)->nullable();
             $table->longText('description');
             $table->string('image_url')->nullable();
-            $table->unsignedBigInteger('suitcase_id');
+            $table->unsignedBigInteger('suitcase_id')->nullable();
             $table->timestamps();
         });
     }

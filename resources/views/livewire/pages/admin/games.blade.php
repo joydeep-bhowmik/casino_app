@@ -1,8 +1,9 @@
 <?php
 
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, title};
 
 //
+title('All games');
 
 ?>
 

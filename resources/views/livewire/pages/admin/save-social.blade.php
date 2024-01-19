@@ -2,9 +2,11 @@
 
 use App\Models\Social;
 use Illuminate\Http\Request;
-use function Livewire\Volt\{state, mount};
+use function Livewire\Volt\{state, mount, title};
 
 state(['id', 'name', 'url', 'link']);
+
+title(fn() => 'Social' . ' ' . ($this->id ? 'Update ' . $this->id : 'Create'));
 
 mount(function (Request $request) {
     if ($request->id) {

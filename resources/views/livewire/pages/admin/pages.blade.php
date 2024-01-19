@@ -1,9 +1,10 @@
 <?php
 
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, title};
 
 //
 
+title('All Pages');
 ?>
 
 <div class="space-y-5">

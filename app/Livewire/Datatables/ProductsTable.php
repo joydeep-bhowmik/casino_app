@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Datatables;
 
-use App\Models\Suitcase;
+use App\Models\Product;
 use JoydeepBhowmik\LivewireDatatable\Datatable;
 
-class SuitcasesTable extends Datatable
+class ProductsTable extends Datatable
 {
-    public $model = Suitcase::class;
+    public $model = Product::class;
     public function table()
     {
         return [
@@ -20,7 +20,7 @@ class SuitcasesTable extends Datatable
             $this->field('...')
 
                 ->value(function ($row) {
-                    $link = route('admin.suitcases.edit', $row->id);
+                    $link = route('admin.products.edit', $row->id);
                     return view('components.edit-link', compact('link'));
                 }),
         ];

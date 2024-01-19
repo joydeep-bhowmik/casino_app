@@ -15,7 +15,7 @@
             <h1 class="text-lg font-bold">Admin panel</h1>
         </nav>
         <div class="flex">
-            <x-admin-nav />
+            <x-admin-nav class="hidden md:block" />
             <main class="w-full border p-4">{{ $slot }}</main>
         </div>
     </div>

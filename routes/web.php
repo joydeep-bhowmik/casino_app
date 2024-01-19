@@ -80,5 +80,15 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         Volt::route('edit/{id}', 'pages.admin.save-suitcase')->name('admin.suitcases.edit');
     });
+
+
+    Route::prefix('products')->group(function () {
+
+        Volt::route('/', 'pages.admin.products')->name('admin.products');
+
+        Volt::route('new', 'pages.admin.save-product')->name('admin.products.new');
+
+        Volt::route('edit/{id}', 'pages.admin.save-product')->name('admin.products.edit');
+    });
 });
 require __DIR__ . '/auth.php';
