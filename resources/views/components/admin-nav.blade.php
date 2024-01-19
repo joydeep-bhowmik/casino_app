@@ -33,6 +33,11 @@
                     Products
                 </a>
 
+                <a class="admin-nav-link" href="{{ route('admin.orders') }}" wire:navigate>
+
+                    Orders
+                </a>
+
             </x-accordion>
 
             <x-accordion title="Site" :open="true">

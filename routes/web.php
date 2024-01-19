@@ -1,8 +1,11 @@
 <?php
 
+use App\Models\Cart;
 use App\Models\Game;
 use App\Models\Page;
+use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Product;
 use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -89,6 +92,26 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Volt::route('new', 'pages.admin.save-product')->name('admin.products.new');
 
         Volt::route('edit/{id}', 'pages.admin.save-product')->name('admin.products.edit');
+    });
+
+
+    Route::prefix('orders')->group(function () {
+
+        Volt::route('/', 'pages.admin.orders')->name('admin.orders');
+
+        Volt::route('new', 'pages.admin.save-order')->name('admin.orders.new');
+
+        Volt::route('edit/{id}', 'pages.admin.save-order')->name('admin.orders.edit');
+    });
+
+
+    Route::get('/add-to-cart', function () {
+        $user = User::first();
+        $product = Product::first();
+        $cart = new Cart();
+        $cart->product_id = $product->id;
+        $cart->user_id = $user->id;
+        $cart->save();
     });
 });
 require __DIR__ . '/auth.php';
