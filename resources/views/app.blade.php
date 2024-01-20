@@ -27,6 +27,14 @@
     function url(str) {
         return "{{ url('/') }}" + str;
     }
+
+    function socket(str) {
+        return "ws://{{ env('PUSHER_HOST') }}:6001" + str;
+    }
+
+    function get_user_token() {
+        return "{{ optional(Auth::user()?->tokens()->latest()->first())->token }}";
+    }
 </script>
 
 </html>

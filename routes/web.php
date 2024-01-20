@@ -1,16 +1,15 @@
 <?php
 
 use App\Models\Cart;
-use App\Models\Game;
 use App\Models\Page;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Product;
 use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SocketController;
+use GuzzleHttp\Psr7\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +27,13 @@ use App\Http\Controllers\ProfileController;
 //     'laravelVersion' => Application::VERSION,
 //     'phpVersion' => PHP_VERSION,
 // ]);
+
 Route::get('/', [HomeController::class, 'index']);
+
+
+Route::get('/get-token', [SocketController::class, 'create']);
+
+Volt::route('listen', 'websocket');
 
 $pages = Page::all();
 
@@ -114,4 +119,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         $cart->save();
     });
 });
+
+
+Route::get('/set-cookie', [SocketController::class, 'create']);
 require __DIR__ . '/auth.php';
+require __DIR__ . '/websocket.php';
