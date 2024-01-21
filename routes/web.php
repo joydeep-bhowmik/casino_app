@@ -3,16 +3,18 @@
 
 use App\Models\Page;
 
-use App\Models\User;
+
 
 use Inertia\Inertia;
 use Livewire\Volt\Volt;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\MinerController;
 use App\Http\Controllers\RotetaController;
 use App\Http\Controllers\SocketController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -33,10 +35,7 @@ use App\Http\Controllers\SocketController;
 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/test', function (Request $request) {
-    $user = User::first();
-    return  $user->balance;
-});
+
 
 Route::get('/get-token', [SocketController::class, 'create']);
 
@@ -121,8 +120,14 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 Route::prefix('games')->group(function () {
 
     Route::get('roteta/{slug}', [RotetaController::class, "index"])->name('games.roteta');
+
+    Route::get('miner', [MinerController::class, "index"])->name('games.miner');
 });
 
+Route::post('/user-balance', function (Request $request) {
+    return $request->user()?->balanceInt;
+});
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/websocket.php';
+require __DIR__ . '/test.php';

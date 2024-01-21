@@ -4,7 +4,7 @@ use App\Models\Game;
 use Illuminate\Http\Request;
 use function Livewire\Volt\{state, mount, title};
 
-state(['id', 'name', 'thumbnail', 'description', 'url']);
+state(['id', 'name', 'slug', 'thumbnail', 'description', 'uid', 'url']);
 
 title(fn() => 'Game' . ' ' . ($this->id ? 'Update ' . $this->id : 'Create'));
 
@@ -25,6 +25,10 @@ mount(function (Request $request) {
         $this->description = $game->description;
 
         $this->url = $game->url;
+
+        $this->uid = $game->uid;
+
+        $this->slug = $game->slug;
     }
 });
 
@@ -32,6 +36,8 @@ $save = function () {
     $this->validate([
         'name' => 'required',
         'thumbnail' => 'required',
+        'slug' => 'required|alpha_dash|max:255,unique:games,slug,' . $this->id,
+        'uid' => 'required|alpha_dash|max:255,unique:games,uid,' . $this->id,
         'url' => 'nullable',
         'description' => 'nullable',
     ]);
@@ -45,9 +51,13 @@ $save = function () {
 
     $game->url = $this->url;
 
+    $game->slug = $this->slug;
+
     $game->thumbnail_url = $this->thumbnail;
 
     $game->description = $this->description;
+
+    $game->uid = $this->uid;
 
     if ($game->save()) {
         return $this->dispatch('alert', type: 'success', message: 'Saved');
@@ -97,6 +107,10 @@ $delete = function () {
             <div class="space-y-5">
 
                 <x-input label="Name" wire:model='name' :error="$errors->first('name')" />
+
+                <x-input label="Unique id" wire:model='uid' :error="$errors->first('uid')" />
+
+                <x-input label="Slug" wire:model='slug' :error="$errors->first('slug')" />
 
                 <x-input label="Url" wire:model='url' :error="$errors->first('url')" />
 

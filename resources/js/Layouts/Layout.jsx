@@ -2,6 +2,7 @@ import Chatbox from "@/Components/Chatbox";
 import Footer from "@/Components/Footer";
 import Header from "@/Components/Header";
 import { useState } from "react";
+import { useStore } from "./../Store/main";
 
 export default function Layout({ children, ...props }) {
     const [state, setState] = useState({

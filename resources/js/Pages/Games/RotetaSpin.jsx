@@ -26,7 +26,7 @@ export default function RotetaSpin({ suitcase, recomended_suitcase }) {
         res = JSON.parse(res.data);
 
         if (res.error) return alert(res.error);
-
+        //spin
         if (res.type == "spin" && res.uid) {
             setState((pre) => ({
                 ...pre,
@@ -59,7 +59,7 @@ export default function RotetaSpin({ suitcase, recomended_suitcase }) {
                 }, 1000);
             });
         }
-
+        //sell
         if (res.type == "sell" && res.sold) {
             alert.show("Sold", { type: "success" });
             setState((pre) => ({
@@ -148,11 +148,6 @@ export default function RotetaSpin({ suitcase, recomended_suitcase }) {
                                 />
                             </div>
                         )}
-                        {state.connection == "connecting" ? (
-                            <span>connecting...</span>
-                        ) : (
-                            ""
-                        )}
 
                         <div className="flex gap-2 w-full md:max-w-md mx-auto mt-10">
                             <PrimaryButton
@@ -165,7 +160,9 @@ export default function RotetaSpin({ suitcase, recomended_suitcase }) {
                                 }}
                                 disabled={state.disabled}
                             >
-                                Open case
+                                {state.connection == "connecting"
+                                    ? "connecting..."
+                                    : "Open case"}
                             </PrimaryButton>
 
                             <PrimaryButton

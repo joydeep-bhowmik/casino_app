@@ -11,8 +11,14 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import { Link } from "@inertiajs/react";
 import { useState } from "react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
+import { useStore } from "@/Store/main";
 
 export default function Header() {
+    const balance = useStore((state) => state.balance);
+    const updateBalance = useStore((state) => state.updateBalance);
+    if (balance == 0) {
+        updateBalance();
+    }
     const [state, setState] = useState({
         showMobileMenu: false,
         showNotificationBox: false,
@@ -65,7 +71,7 @@ export default function Header() {
 
                 <div className="hidden lg:flex gap-5 items-center justify-center font-bold bg-[#141414] rounded-md p-2">
                     <div className="flex gap-3 items-center">
-                        <span className="text-[#5AC35D]">€</span> 0.00
+                        <span className="text-[#5AC35D]">€</span> {balance}
                     </div>
 
                     <Link href="/" className="text-black">

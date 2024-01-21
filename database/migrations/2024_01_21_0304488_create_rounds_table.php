@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('games', function (Blueprint $table) {
+        Schema::create('rounds', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('uid')->unique();
-            $table->string('slug')->unique();
-            $table->string('thumbnail_url');
-            $table->string('url')->nullable();
-            $table->longText('description')->nullable();
+            $table->unsignedBigInteger('game_id');
+            $table->unsignedBigInteger('user_id');
+            $table->string('status');
+            $table->json('game_data')->nullable();
+            $table->string('multiplier')->nullable();
+            $table->decimal('payout', 10, 2)->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('games');
+        Schema::dropIfExists('rounds');
     }
 };
