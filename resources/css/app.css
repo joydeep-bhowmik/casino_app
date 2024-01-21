@@ -63,4 +63,35 @@
     .admin-nav-link.active {
         @apply bg-slate-100;
     }
+    .hide_scroll_bar::-webkit-scrollbar {
+        opacity: 0;
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+    .item-bg-gradiant {
+        background: rgb(12, 25, 42);
+        background: linear-gradient(
+            4deg,
+            rgba(12, 25, 42, 1) 0%,
+            rgba(20, 23, 37, 1) 0%,
+            rgba(0, 0, 0, 1) 100%
+        );
+    }
+
+    .animate-scroll-left {
+        animation: scrollLeft 100ms linear infinite;
+    }
+    .absolute-center {
+        @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+    }
+    @keyframes scrollLeft {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(
+                -100%
+            ); /* Translate the content infinitely to the left */
+        }
+    }
 }

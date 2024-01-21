@@ -20,8 +20,8 @@ export default function Layout({ children, ...props }) {
         <>
             <Header />
 
-            <div className="min-h-screen grid grid-cols-[auto_auto]">
-                <aside className="max-w-fit w-full h-full flex flex-col max-h-[85vh] p-3 overflow-x-auto">
+            <div className="min-h-screen ">
+                <aside className="max-w-fit w-full h-full hidden flex-col max-h-[85vh] p-3 overflow-x-auto absolute  lg:flex">
                     <div className="columns-3 justify-center gap-3 p-3 bg ">
                         <button type="button" className={setClass("chaa")}>
                             <svg
@@ -116,7 +116,7 @@ export default function Layout({ children, ...props }) {
                     </div>
                 </aside>
 
-                <main className="w-full">{children}</main>
+                <main className="w-auto lg:ml-[280px] px-5">{children}</main>
             </div>
 
             <Footer />

@@ -3,15 +3,12 @@
 namespace App\Ws\Controllers;
 
 
-use Exception;
+
 use App\Models\User;
 use SplObjectStorage;
 use Ratchet\ConnectionInterface;
 use Illuminate\Support\Facades\DB;
 
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Session\SessionManager;
-use Illuminate\Support\Facades\Config;
 use BeyondCode\LaravelWebSockets\Apps\App;
 use Ratchet\WebSocket\MessageComponentInterface;
 
@@ -68,12 +65,13 @@ class WsController  implements MessageComponentInterface
 
     public final function onError(ConnectionInterface $conn, \Exception $e)
     {
-        echo "An error has occurred: {$e->getMessage()}\n";
+        $message = "An error has occurred: {$e->getMessage()}";
+        $message .= " in {$e->getFile()} on line {$e->getLine()}\n";
+
+        echo $message;
 
         $conn->close();
     }
-
-
     final function authenticate(ConnectionInterface $conn, $token)
     {
 

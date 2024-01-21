@@ -1,15 +1,18 @@
 <?php
 
-use App\Models\Cart;
+
 use App\Models\Page;
+
 use App\Models\User;
+
 use Inertia\Inertia;
-use App\Models\Product;
 use Livewire\Volt\Volt;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RotetaController;
 use App\Http\Controllers\SocketController;
-use GuzzleHttp\Psr7\Request;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +33,10 @@ use GuzzleHttp\Psr7\Request;
 
 Route::get('/', [HomeController::class, 'index']);
 
+Route::get('/test', function (Request $request) {
+    $user = User::first();
+    return  $user->balance;
+});
 
 Route::get('/get-token', [SocketController::class, 'create']);
 
@@ -108,19 +115,14 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         Volt::route('edit/{id}', 'pages.admin.save-order')->name('admin.orders.edit');
     });
-
-
-    Route::get('/add-to-cart', function () {
-        $user = User::first();
-        $product = Product::first();
-        $cart = new Cart();
-        $cart->product_id = $product->id;
-        $cart->user_id = $user->id;
-        $cart->save();
-    });
 });
 
 
-Route::get('/set-cookie', [SocketController::class, 'create']);
+Route::prefix('games')->group(function () {
+
+    Route::get('roteta/{slug}', [RotetaController::class, "index"])->name('games.roteta');
+});
+
+
 require __DIR__ . '/auth.php';
 require __DIR__ . '/websocket.php';

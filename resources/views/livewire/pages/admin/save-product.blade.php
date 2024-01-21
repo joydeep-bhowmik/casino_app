@@ -25,6 +25,8 @@ mount(function (Request $request) {
 
         $this->slug = $product->slug;
 
+        $this->suitcase = $product->suitcase_id;
+
         $this->compare_at_price = $product->compare_at_price;
 
         $this->description = $product->description;
@@ -59,6 +61,8 @@ $save = function () {
     $product->compare_at_price = $this->compare_at_price;
 
     $product->description = $this->description;
+
+    $product->suitcase_id = $this->suitcase;
 
     $product->image_url = $this->image;
 

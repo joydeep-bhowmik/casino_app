@@ -24,6 +24,8 @@
         "laravel-echo": "^1.15.3",
         "marked": "^11.1.1",
         "pusher-js": "^8.4.0-rc2",
+        "react-alert": "^7.0.3",
+        "react-alert-template-basic": "^1.0.2",
         "react-markdown": "^9.0.1"
     }
 }

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shipping_address', function (Blueprint $table) {
-            $table->ulid('id')->primary();
-            $table->ulid('user_id');
+            $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')
                 ->on('users')->onDelete('cascade');
             $table->string('first_name');
