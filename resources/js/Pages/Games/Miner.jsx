@@ -15,6 +15,9 @@ export default function Miner({}) {
     const alert = useAlert();
 
     const updateBalance = useStore((state) => state.updateBalance);
+    const balance = useStore((state) => state.balance);
+    const roundId = useStore((state) => state.roundId);
+    const updateRoundId = useStore((state) => state.updateRoundId);
 
     const initialTiles = Array.from({ length: 25 }, (_, index) => ({
         number: index + 1,
@@ -25,7 +28,35 @@ export default function Miner({}) {
         tiles: initialTiles,
         disabled: true,
         connection: "connecting",
+        mines: "",
+        gems: "",
+        bet: "",
+        gridLocked: true,
     });
+    console.log("Current state:", state);
+
+    const resetTiles = () => {
+        setState((pre) => ({
+            ...pre,
+            tiles: initialTiles,
+        }));
+    };
+
+    const placeBet = () => {
+        resetTiles();
+        if (!state.bet) {
+            return alert.info("Enter bid ammount");
+        }
+        if (!state.mines) {
+            return alert.info("Enter number of mines");
+        }
+        updateBalance(balance - state.bet);
+        send_message({
+            type: "start",
+            bid: state.bet,
+            mines: state.mines,
+        });
+    };
 
     const change_block = ({ number, type }) => {
         // Find the index of the tile in the state.tiles array
@@ -39,10 +70,29 @@ export default function Miner({}) {
             updatedTiles[tileIndex].type = type;
 
             // Update the state with the new tiles array
-            setState({ tiles: updatedTiles });
+            setState((pre) => ({
+                ...pre,
+                tiles: updatedTiles,
+            }));
         } else {
             console.log(`Tile ${number} not found`);
         }
+    };
+
+    const showAll = (mines) => {
+        let tiles = [...initialTiles]; // Create a copy of initialTiles
+
+        for (let i = 0; i < tiles.length; i++) {
+            tiles[i] = { ...tiles[i], number: i };
+            tiles[i].type = mines.includes(i) ? "mine" : "gem";
+        }
+
+        setState((prevState) => ({
+            ...prevState,
+            tiles: tiles,
+            disabled: false,
+            gridLocked: true,
+        }));
     };
 
     const conn = new WebSocket(socket("/miner?token=" + get_user_token()));
@@ -57,13 +107,28 @@ export default function Miner({}) {
             return alert.info(res.info);
         }
         if (res.success) {
-            window.round_id = res.success;
+            updateRoundId(res.success);
+
+            setState((pre) => ({
+                ...pre,
+                disabled: true,
+                gridLocked: false,
+            }));
+            return alert.success("Started");
         }
         if (res.block) {
             change_block({ type: res.block.type, number: res.block.number });
-            updateBalance();
-            if (res.block.type == "mine") {
-                return alert.info("Game Over");
+
+            if (res.block.type === "mine") {
+                updateBalance();
+
+                alert.info("Game Over");
+
+                setTimeout(() => {
+                    showAll(res.block.reveal_mines);
+                }, 500);
+
+                return;
             }
         }
     };
@@ -107,16 +172,72 @@ export default function Miner({}) {
                             allowClear={false}
                             className="flex gap-2  items-center "
                             inputClassName=""
+                            value={state.bet}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                if (value > balance) {
+                                    return;
+                                }
+                                setState((pre) => ({
+                                    ...pre,
+                                    bet: value,
+                                }));
+                            }}
                         >
-                            <MultiplierButton>1/2</MultiplierButton>
-                            <MultiplierButton>2x</MultiplierButton>
-                            <MultiplierButton>max</MultiplierButton>
+                            <MultiplierButton
+                                onClick={(e) => {
+                                    let bet = state.bet / 2;
+                                    if (bet >= 0) {
+                                        setState((pre) => ({
+                                            ...pre,
+                                            bet: bet,
+                                        }));
+                                    }
+                                }}
+                            >
+                                1/2
+                            </MultiplierButton>
+                            <MultiplierButton
+                                onClick={(e) => {
+                                    let bet = state.bet * 2;
+                                    if (bet <= balance) {
+                                        setState((pre) => ({
+                                            ...pre,
+                                            bet: bet,
+                                        }));
+                                    }
+                                }}
+                            >
+                                2x
+                            </MultiplierButton>
+                            <MultiplierButton
+                                onClick={(e) => {
+                                    setState((pre) => ({
+                                        ...pre,
+                                        bet: balance,
+                                    }));
+                                }}
+                            >
+                                max
+                            </MultiplierButton>
                         </Input>
 
                         <Input
                             type="number"
                             className="bg-[#333] rounded-md"
                             label="Miner"
+                            value={state.mines}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                console.log(value, value < 20);
+                                if (value <= 20) {
+                                    return setState((pre) => ({
+                                        ...pre,
+                                        mines: value,
+                                    }));
+                                }
+                                return alert.error("Invalid mines");
+                            }}
                             prefix={<SmallMine />}
                         ></Input>
 
@@ -124,18 +245,15 @@ export default function Miner({}) {
                             type="number"
                             className="bg-[#333] rounded-md"
                             label="Gems"
+                            value={state.tiles.length - state.mines}
+                            disabled={true}
                             prefix={<SmallGem />}
                         ></Input>
 
                         <PrimaryButton
                             className="mt-auto"
-                            onClick={() => {
-                                send_message({
-                                    type: "start",
-                                    bid: "22",
-                                    mines: "5",
-                                });
-                            }}
+                            disabled={state.disabled}
+                            onClick={placeBet}
                         >
                             Place Bet
                         </PrimaryButton>
@@ -169,10 +287,11 @@ export default function Miner({}) {
                                         send_message({
                                             type: "check",
                                             number: i.number,
-                                            round_id: window.round_id,
+                                            round_id: roundId,
                                         });
                                     }}
                                     key={i.number}
+                                    disabled={state.gridLocked}
                                 >
                                     {block}
                                 </button>

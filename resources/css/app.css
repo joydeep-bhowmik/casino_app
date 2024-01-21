@@ -107,4 +107,23 @@
             ); /* Translate the content infinitely to the left */
         }
     }
+
+    /* Crash.css */
+
+    .crash-container {
+        width: 5px;
+        height: 50px;
+        background-color: blue;
+        position: absolute;
+        bottom: 0;
+    }
+
+    @keyframes moveDiagonal {
+        from {
+            transform: translate(0, 100%);
+        }
+        to {
+            transform: translate(100%, 0);
+        }
+    }
 }

@@ -22,6 +22,7 @@ class WsController  implements MessageComponentInterface
     public final function __construct()
     {
         $this->clients = new SplObjectStorage;
+        $this->withConstruct();
     }
 
     public final function onOpen(ConnectionInterface $conn)
@@ -46,7 +47,7 @@ class WsController  implements MessageComponentInterface
 
         $this->clients->attach($conn);
 
-
+        $this->withOnOpen($conn);
 
         echo "New connection! ({$conn->resourceId})\n";
     }
@@ -60,6 +61,8 @@ class WsController  implements MessageComponentInterface
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
 
+        $this->withOnClsoe($conn);
+
         echo "Connection {$conn->resourceId} has disconnected\n";
     }
 
@@ -70,8 +73,11 @@ class WsController  implements MessageComponentInterface
 
         echo $message;
 
+        $this->withOnError($conn);
+
         $conn->close();
     }
+
     final function authenticate(ConnectionInterface $conn, $token)
     {
 
@@ -83,18 +89,18 @@ class WsController  implements MessageComponentInterface
         return $user;
     }
 
-    protected function getUser(ConnectionInterface $conn)
+
+
+    function withOnOpen(ConnectionInterface $conn)
     {
-        // Check if the connection exists in SplObjectStorage
-        if ($this->clients->contains($conn)) {
-            // Get the user data associated with the connection
-            $userData = $this->clients->offsetGet($conn);
-
-            // Return the user object
-            return $userData->user;
-        }
-
-        // Return null or handle the case where the connection is not found
-        return null;
+    }
+    function withOnClsoe(ConnectionInterface  $conn)
+    {
+    }
+    function withOnError(ConnectionInterface  $conn)
+    {
+    }
+    function withConstruct()
+    {
     }
 }

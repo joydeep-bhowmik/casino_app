@@ -15,6 +15,7 @@ import { useStore } from "@/Store/main";
 
 export default function Header() {
     const balance = useStore((state) => state.balance);
+    const updating_balance = useStore((state) => state.updating_balance);
     const updateBalance = useStore((state) => state.updateBalance);
     if (balance == 0) {
         updateBalance();
@@ -71,7 +72,25 @@ export default function Header() {
 
                 <div className="hidden lg:flex gap-5 items-center justify-center font-bold bg-[#141414] rounded-md p-2">
                     <div className="flex gap-3 items-center">
-                        <span className="text-[#5AC35D]">€</span> {balance}
+                        <span className="text-[#5AC35D]">€</span>{" "}
+                        {updating_balance ? (
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="w-4 h-4 animate-bounce -mb-2"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                />
+                            </svg>
+                        ) : (
+                            balance
+                        )}
                     </div>
 
                     <Link href="/" className="text-black">

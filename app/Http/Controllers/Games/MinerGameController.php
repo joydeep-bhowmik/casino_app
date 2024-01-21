@@ -51,8 +51,12 @@ class MinerGameController extends Controller
 
         $round->game_data = json_encode($game_data);
 
-        if ($round->save()) return ['success' => $round->id];
+        if ($round->save()) {
+            $user->withdraw($this->bid);
+            return ['success' => $round->id];
+        }
     }
+
 
     function configure()
     {
@@ -138,7 +142,8 @@ class MinerGameController extends Controller
 
             return ['block' => [
                 'type' => 'mine',
-                'number' => $number
+                'number' => $number,
+                'reveal_mines' => $data->mines,
             ]];
         }
     }

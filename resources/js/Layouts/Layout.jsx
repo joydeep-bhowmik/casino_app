@@ -6,7 +6,7 @@ import { useStore } from "./../Store/main";
 
 export default function Layout({ children, ...props }) {
     const [state, setState] = useState({
-        activeTab: "chat",
+        activeTab: "cat",
     });
 
     const setClass = (tab) => {
