@@ -1,113 +1,236 @@
-import React, { useEffect, useRef } from "react";
+import GameLayout from "@/Layouts/GameLayout";
+import { useAlert } from "react-alert";
+import { useStore } from "@/Store/main";
+import Input from "@/Components/Games/Input";
+import MultiplierButton from "@/Components/Games/MultiplierButton";
+import { useEffect, useState } from "react";
+import PrimaryButton from "@/Components/PrimaryButton";
+import Plane from "@/Components/Games/Crash/Plane";
 
-const Crash = () => {
-    const canvasWidth = 500; // Set your desired canvas width
-    const canvasHeight = 300; // Set your desired canvas height
+export default function Tower() {
+    const alert = useAlert();
+    const updateBalance = useStore((state) => state.updateBalance);
+    const balance = useStore((state) => state.balance);
+    const roundId = useStore((state) => state.roundId);
+    const updateRoundId = useStore((state) => state.updateRoundId);
 
-    const canvasRef = useRef(null);
-    const imageRef = useRef(null);
+    const [state, setState] = useState({
+        betDisabled: true,
+        connection: "connecting",
+        bet: 0,
+        isMovingDown: false,
+        showPlane: false,
+        cashOut: false,
+        ping: false,
+        multiplier: 0,
+    });
+
+    const placeBet = () => {
+        if (state.bet > balance) {
+            return alert.error("Insufficient funds");
+        }
+        send_message({ type: "start", bet: state.bet });
+    };
+
+    const cashOut = () => {
+        send_message({ type: "cashout", round_id: roundId });
+    };
+
+    const conn = new WebSocket(socket("/crash?token=" + get_user_token()));
+
+    conn.onmessage = (res) => {
+        res = res.data;
+        res = JSON.parse(res);
+        console.log(res);
+        if (res.error) {
+            return alert.error(res.error);
+        }
+
+        if (res.info) {
+            return alert.info(res.info);
+        }
+
+        if (res.success) {
+            updateRoundId(res.success.round_id);
+
+            setState((pre) => ({
+                ...pre,
+                betDisabled: true,
+                cashOut: true,
+                showPlane: true,
+                ping: true,
+            }));
+            alert.success(res.success.message);
+
+            return;
+        }
+
+        if (res.crash || res.cashout) {
+            setState((pre) => ({
+                ...pre,
+                betDisabled: false,
+                isMovingDown: true,
+                cashOut: false,
+                ping: false,
+            }));
+
+            setTimeout(() => {
+                setState((pre) => ({
+                    ...pre,
+                    showPlane: false,
+                }));
+            }, 2000);
+
+            if (res.cashout) {
+                return alert.success("Cashout successfull");
+            }
+            return alert.info("Crashed");
+        }
+    };
+
+    const send_message = (json) => {
+        console.log("sending : ", json);
+        conn.send(JSON.stringify(json));
+    };
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
-
-        // Set canvas size
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-
-        // Load image
-        const image = new Image();
-        image.src = url("/assets/img/plane.png"); // Replace with the actual path to your image
-        imageRef.current = image;
-
-        // Set image width and height
-        const imageWidth = 100; // Set your desired width
-        const imageHeight = 50; // Set your desired height
-
-        // Initial position and size of the line
-        let x = 0;
-        let y = canvas.height;
-        let lineLength = canvas.width;
-
-        // Flag to indicate the direction of movement
-        let isMovingDown = false;
-
-        // Animation function
-        const animate = () => {
-            // Clear the canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw the white line
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height);
-            ctx.lineTo(x, y);
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Draw the rotated image on top of the line with specified width and height
-            if (!isMovingDown) {
-                ctx.save();
-                ctx.translate(x, y - imageHeight);
-                ctx.rotate(0); // No rotation when going up
-                ctx.drawImage(
-                    imageRef.current,
-                    -imageWidth / 2,
-                    30,
-                    imageWidth,
-                    imageHeight
-                ); // Move image closer to the line
-                ctx.restore();
-            } else {
-                ctx.save();
-                ctx.translate(x, y - imageHeight);
-                ctx.rotate(-31); // Rotate 180 degrees when going down
-                ctx.drawImage(
-                    imageRef.current,
-                    -imageWidth / 2,
-                    30,
-                    imageWidth,
-                    imageHeight
-                ); // Move image closer to the line
-                ctx.restore();
-            }
-
-            // Update position for the next frame
-            if (!isMovingDown) {
-                x += 2;
-                y -= (canvas.height / lineLength) * 2;
-
-                // Check if the line has reached the middle of the right border
-                if (x >= canvas.width / 2) {
-                    // Set the flag to indicate moving down
-                    isMovingDown = true;
-                }
-            } else {
-                // Move down to the bottom-right corner
-                x += 2;
-                y += 2;
-
-                // Check if the line has reached the bottom-right corner
-                if (x >= canvas.width && y >= canvas.height) {
-                    // Reset the position to start the next V shape
-                    x = 0;
-                    y = canvas.height;
-                    isMovingDown = false;
-                }
-            }
-
-            // Request the next animation frame
-            requestAnimationFrame(animate);
+        conn.onopen = function (e) {
+            setState((pre) => ({
+                ...pre,
+                connection: "open",
+                betDisabled: false,
+            }));
         };
 
-        // Start the animation
-        animate();
+        conn.onclose = function (e) {
+            setState((pre) => ({
+                ...pre,
+                connection: "closed",
+                betDisabled: true,
+                ping: false,
+            }));
+        };
 
-        // Cleanup function
-        return () => cancelAnimationFrame(animate);
-    }, []);
+        let intervalId;
 
-    return <canvas ref={canvasRef} style={{ background: "black" }} />;
-};
+        if (state.ping) {
+            let multiplier = 0;
+            intervalId = setInterval(() => {
+                multiplier = multiplier + 0.1;
+                setState((pre) => ({ ...pre, multiplier: multiplier }));
+                send_message({
+                    type: "check",
+                    number: multiplier,
+                    round_id: roundId,
+                });
+            }, 1000);
+        }
 
-export default Crash;
+        // Clear interval when shouldClearInterval becomes true
+        if (!state.ping && intervalId) {
+            clearInterval(intervalId);
+        }
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [state.ping]);
+
+    return (
+        <GameLayout title="Crash">
+            <div className="w-full md:p-5 md:py-10 grid place-items-center Tower-bg min-h-64">
+                {state.showPlane ? (
+                    <Plane isMovingDown={state.isMovingDown} />
+                ) : (
+                    ""
+                )}
+            </div>
+            <div className="flex items-center gap-2 mt-5">
+                <Input
+                    label="bet amount"
+                    prefix="$"
+                    allowClear={false}
+                    className="flex gap-1  items-center "
+                    inputClassName=""
+                    value={state.bet}
+                    onChange={(e) => {
+                        let value = e.target.value;
+                        if (value > balance) {
+                            alert.info("Insufficient balance");
+                            return;
+                        }
+                        setState((pre) => ({
+                            ...pre,
+                            bet: value,
+                        }));
+                    }}
+                >
+                    {[
+                        { mul: 1, label: "+1", mode: "plus" },
+                        { mul: 5, label: "+5", mode: "plus" },
+                        { mul: 10, label: "+10", mode: "plus" },
+                        { mul: 25, label: "+25", mode: "plus" },
+                        { mul: 0.5, label: "1/2" },
+                        { mul: 2, label: "2x" },
+                    ].map((o, i) => (
+                        <MultiplierButton
+                            key={i}
+                            onClick={(e) => {
+                                state.bet = parseFloat(state.bet, 10);
+                                o.mul = parseFloat(o.mul, 10);
+                                let bet = state.bet * o.mul;
+                                if (o.mode == "plus") {
+                                    bet = state.bet + o.mul;
+                                }
+                                if (bet > balance) {
+                                    return alert.error("Insufficient balance");
+                                }
+
+                                if (bet >= 0) {
+                                    setState((pre) => ({
+                                        ...pre,
+                                        bet: parseInt(bet),
+                                    }));
+                                }
+                            }}
+                        >
+                            {o.label}
+                        </MultiplierButton>
+                    ))}
+
+                    <MultiplierButton
+                        onClick={(e) => {
+                            setState((pre) => ({
+                                ...pre,
+                                bet: balance,
+                            }));
+                        }}
+                    >
+                        max
+                    </MultiplierButton>
+                </Input>
+                {state.cashOut ? (
+                    <PrimaryButton
+                        className="w-full max-w-xs -mb-6"
+                        disabled={state.betDisabled}
+                        onClick={cashOut}
+                    >
+                        {parseInt(state.bet) +
+                            parseInt(state.bet) * state.multiplier}
+                        {"cashout "}
+                    </PrimaryButton>
+                ) : (
+                    <PrimaryButton
+                        className="w-full max-w-xs -mb-6"
+                        disabled={state.betDisabled}
+                        onClick={placeBet}
+                    >
+                        {state.connection == "connecting"
+                            ? "connecting..."
+                            : "Place bet"}
+                    </PrimaryButton>
+                )}
+            </div>
+        </GameLayout>
+    );
+}

@@ -37,12 +37,7 @@ class RotetaSocket  extends WsController
                 'sold' => $this->sell_item($data->id, $from->user)
             ];
         }
-        foreach ($this->clients as $client) {
-            // The sender is not the receiver, send to each client connected
-            if ($from == $client) {
-                $client->send(json_encode($response));
-            }
-        }
+        $from->send(json_encode($response));
     }
 
     function sell_item($id, $user)

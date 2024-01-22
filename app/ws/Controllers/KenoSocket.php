@@ -36,10 +36,6 @@ class KenoSocket extends WsController
             $response = $check;
         }
 
-        foreach ($this->clients as $client) {
-            if ($from == $client) {
-                $client->send(json_encode($response));
-            }
-        }
+        $from->send(json_encode($response));
     }
 }
