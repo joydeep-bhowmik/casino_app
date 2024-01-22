@@ -1,25 +1,23 @@
-import Block from "@/Components/Games/Keno/Block";
-import Gem from "@/Components/Games/Keno/Gem";
-import Red from "@/Components/Games/Keno/Red";
-import Green from "@/Components/Games/Keno/Green";
+import Block from "@/Components/Games/Tower/Block";
+import Red from "@/Components/Games/Tower/Red";
+import Green from "@/Components/Games/Tower/Green";
 import GameLayout from "@/Layouts/GameLayout";
 import { useAlert } from "react-alert";
 import { useStore } from "@/Store/main";
 import Input from "@/Components/Games/Input";
 import MultiplierButton from "@/Components/Games/MultiplierButton";
 import { useEffect, useState } from "react";
-import Select from "@/Components/Games/Select";
 import PrimaryButton from "@/Components/PrimaryButton";
 
-export default function Keno() {
+export default function Tower() {
     const alert = useAlert();
     const updateBalance = useStore((state) => state.updateBalance);
     const balance = useStore((state) => state.balance);
     const roundId = useStore((state) => state.roundId);
     const updateRoundId = useStore((state) => state.updateRoundId);
 
-    const initialTiles = Array.from({ length: 40 }, (_, index) => ({
-        number: index + 1,
+    const initialTiles = Array.from({ length: 27 }, (_, index) => ({
+        number: 27 - index,
         type: "block",
     }));
 
@@ -27,7 +25,7 @@ export default function Keno() {
         tiles: initialTiles,
         betDisabled: true,
         connection: "connecting",
-        bet: "",
+        bet: 0,
         risk: "low",
         gridLocked: true,
     });
@@ -66,7 +64,7 @@ export default function Keno() {
 
         for (let i = 0; i < tiles.length; i++) {
             tiles[i] = { ...tiles[i], number: i };
-            tiles[i].type = mines.includes(i) ? "red" : "gem";
+            tiles[i].type = mines.includes(i) ? "green" : "red";
         }
 
         setState((prevState) => ({
@@ -83,13 +81,10 @@ export default function Keno() {
         if (state.bet > balance) {
             return alert.error("Insufficient funds");
         }
-        if (!["low", "medium", "high"].includes(state.risk)) {
-            return alert.error("Invalid risk");
-        }
-        send_message({ type: "start", bet: state.bet, risk: state.risk });
+        send_message({ type: "start", bet: state.bet });
     };
 
-    const conn = new WebSocket(socket("/keno?token=" + get_user_token()));
+    const conn = new WebSocket(socket("/tower?token=" + get_user_token()));
 
     conn.onmessage = (res) => {
         res = res.data;
@@ -109,6 +104,7 @@ export default function Keno() {
 
             setState((pre) => ({
                 ...pre,
+                betDisabled: true,
                 disabled: true,
                 gridLocked: false,
             }));
@@ -118,6 +114,16 @@ export default function Keno() {
 
         if (res.block) {
             change_block({ type: res.block.type, number: res.block.number });
+
+            if (res.block.type == "red") {
+                setState((pre) => ({
+                    ...pre,
+                    betDisabled: false,
+                    disabled: false,
+                    gridLocked: false,
+                }));
+                return alert.info("Game over");
+            }
         }
 
         if (res.finished) {
@@ -149,22 +155,17 @@ export default function Keno() {
     }, []);
 
     return (
-        <GameLayout title="Keno">
-            <div className="w-full md:p-5 md:py-10 grid place-items-center keno-bg">
-                <div className="w-full grid grid-cols-8 gap-3 max-w-lg">
+        <GameLayout title="Tower">
+            <div className="w-full md:p-5 md:py-10 grid place-items-center Tower-bg">
+                <div className="w-full grid grid-cols-3 gap-3 max-w-lg">
                     {state.tiles.map((i) => {
                         const type = i.type;
                         var block = "";
-                        const className = "h-14 w-14";
+                        const className = "";
                         switch (type) {
                             case "red":
                                 block = (
                                     <Red className={className}>{i.number}</Red>
-                                );
-                                break;
-                            case "gem":
-                                block = (
-                                    <Gem className={className}>{i.number}</Gem>
                                 );
                                 break;
                             case "green":
@@ -220,32 +221,38 @@ export default function Keno() {
                         }));
                     }}
                 >
-                    <MultiplierButton
-                        onClick={(e) => {
-                            let bet = state.bet / 2;
-                            if (bet >= 0) {
-                                setState((pre) => ({
-                                    ...pre,
-                                    bet: bet,
-                                }));
-                            }
-                        }}
-                    >
-                        1/2
-                    </MultiplierButton>
-                    <MultiplierButton
-                        onClick={(e) => {
-                            let bet = state.bet * 2;
-                            if (bet <= balance) {
-                                setState((pre) => ({
-                                    ...pre,
-                                    bet: bet,
-                                }));
-                            }
-                        }}
-                    >
-                        2x
-                    </MultiplierButton>
+                    {[
+                        { mul: 1, label: "+1", mode: "plus" },
+                        { mul: 5, label: "+5", mode: "plus" },
+                        { mul: 10, label: "+10", mode: "plus" },
+                        { mul: 25, label: "+25", mode: "plus" },
+                        { mul: 0.5, label: "1/2" },
+                        { mul: 2, label: "2x" },
+                    ].map((o) => (
+                        <MultiplierButton
+                            onClick={(e) => {
+                                state.bet = parseFloat(state.bet, 10);
+                                o.mul = parseFloat(o.mul, 10);
+                                let bet = state.bet * o.mul;
+                                if (o.mode == "plus") {
+                                    bet = state.bet + o.mul;
+                                }
+                                if (bet > balance) {
+                                    return alert.error("Insufficient balance");
+                                }
+
+                                if (bet >= 0) {
+                                    setState((pre) => ({
+                                        ...pre,
+                                        bet: parseInt(bet),
+                                    }));
+                                }
+                            }}
+                        >
+                            {o.label}
+                        </MultiplierButton>
+                    ))}
+
                     <MultiplierButton
                         onClick={(e) => {
                             setState((pre) => ({
@@ -258,23 +265,8 @@ export default function Keno() {
                     </MultiplierButton>
                 </Input>
 
-                <Select
-                    label="Risk"
-                    value={state.risk}
-                    onChange={(e) => {
-                        setState((pre) => ({
-                            ...pre,
-                            risk: e.target.value,
-                        }));
-                    }}
-                >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </Select>
-
                 <PrimaryButton
-                    className="w-full -mb-6"
+                    className="w-full max-w-xs -mb-6"
                     disabled={state.betDisabled}
                     onClick={placeBet}
                 >

@@ -15,6 +15,7 @@ use App\Http\Controllers\KenoController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CrashController;
 use App\Http\Controllers\MinerController;
+use App\Http\Controllers\TowerController;
 use App\Http\Controllers\RotetaController;
 use App\Http\Controllers\SocketController;
 
@@ -128,6 +129,8 @@ Route::prefix('games')->group(function () {
     Route::get('crash', [CrashController::class, "index"])->name('games.crash');
 
     Route::get('keno', [KenoController::class, "index"])->name('games.keno');
+
+    Route::get('tower', [TowerController::class, "index"])->name('games.tower');
 });
 
 Route::any('/user-balance', function (Request $request) {
