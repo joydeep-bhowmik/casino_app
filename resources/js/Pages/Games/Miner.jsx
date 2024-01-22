@@ -13,7 +13,6 @@ import { useStore } from "@/Store/main";
 
 export default function Miner({}) {
     const alert = useAlert();
-
     const updateBalance = useStore((state) => state.updateBalance);
     const balance = useStore((state) => state.balance);
     const roundId = useStore((state) => state.roundId);

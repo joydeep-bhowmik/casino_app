@@ -1,6 +1,7 @@
 <?php
 
 use App\Ws\Controllers\ChatSocket;
+use App\Ws\Controllers\KenoSocket;
 use App\Ws\Controllers\CrashSocket;
 use App\Ws\Controllers\MinerSocket;
 use App\Ws\Controllers\RotetaSocket;
@@ -12,5 +13,6 @@ WebSocketsRouter::webSocket('/roteta', RotetaSocket::class);
 
 WebSocketsRouter::webSocket('/miner', MinerSocket::class);
 
+WebSocketsRouter::webSocket('/keno', KenoSocket::class);
 
 WebSocketsRouter::webSocket('/crash', CrashSocket::class);

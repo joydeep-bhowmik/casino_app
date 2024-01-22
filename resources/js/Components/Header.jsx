@@ -9,7 +9,7 @@ import UsersIcon from "@/Components/Icons/UsersIcon";
 import MobileMenu from "@/Components/MobileMenu";
 import PrimaryButton from "@/Components/PrimaryButton";
 import { Link } from "@inertiajs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import { useStore } from "@/Store/main";
 
@@ -17,13 +17,18 @@ export default function Header() {
     const balance = useStore((state) => state.balance);
     const updating_balance = useStore((state) => state.updating_balance);
     const updateBalance = useStore((state) => state.updateBalance);
-    if (balance == 0) {
-        updateBalance();
-    }
+    const addBalace = useStore((state) => state.addBalace);
+
     const [state, setState] = useState({
         showMobileMenu: false,
         showNotificationBox: false,
     });
+
+    useEffect(() => {
+        if (balance == 0) {
+            updateBalance();
+        }
+    }, []);
     return (
         <nav className="flex items-center p-5 lg:p-10 gap-5  text-[#959595] text-sm">
             <ApplicationLogo />
@@ -93,9 +98,21 @@ export default function Header() {
                         )}
                     </div>
 
-                    <Link href="/" className="text-black">
-                        <PrimaryButton className="py-2">Deposit</PrimaryButton>
-                    </Link>
+                    {/* <Link href="/" className="text-black">
+                        <PrimaryButton
+                            className="py-2"
+                            onClick={() => addBalace(200)}
+                        >
+                            Deposit
+                        </PrimaryButton>
+                    </Link> */}
+
+                    <PrimaryButton
+                        className="py-2 text-black"
+                        onClick={() => addBalace(200)}
+                    >
+                        Deposit
+                    </PrimaryButton>
 
                     <span className="flex gap-3 items-center">
                         <BottleIcon width="14" height="21" /> 3

@@ -11,6 +11,7 @@ use Livewire\Volt\Volt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KenoController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CrashController;
 use App\Http\Controllers\MinerController;
@@ -125,12 +126,14 @@ Route::prefix('games')->group(function () {
     Route::get('miner', [MinerController::class, "index"])->name('games.miner');
 
     Route::get('crash', [CrashController::class, "index"])->name('games.crash');
+
+    Route::get('keno', [KenoController::class, "index"])->name('games.keno');
 });
 
-Route::post('/user-balance', function (Request $request) {
+Route::any('/user-balance', function (Request $request) {
     return $request->user()?->balanceInt;
 });
-Route::get('/add-user-balance', function (Request $request) {
+Route::any('/add-user-balance', function (Request $request) {
     return $request->user()?->deposit($request->amount ?? 100);
 });
 

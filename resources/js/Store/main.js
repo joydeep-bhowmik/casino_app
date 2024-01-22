@@ -8,6 +8,17 @@ export const useStore = create((set) => ({
     updateRoundId: (id) => {
         set({ roundId: id });
     },
+    addBalace: (amount = null) => {
+        set({ updating_balance: true });
+        axios
+            .post(url("/add-user-balance"))
+            .then((res) => {
+                this.updateBalance();
+            })
+            .finally(() => {
+                set({ updating_balance: false });
+            });
+    },
     updateBalance: (balance = null) => {
         if (balance) {
             set({ balance: balance });

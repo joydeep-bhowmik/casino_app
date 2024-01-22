@@ -126,4 +126,13 @@
             transform: translate(100%, 0);
         }
     }
+    .keno-bg {
+        background: rgb(143, 147, 152);
+        background: linear-gradient(
+            97deg,
+            rgba(143, 147, 152, 1) 0%,
+            rgba(22, 38, 30, 1) 0%,
+            rgba(0, 0, 0, 1) 39%
+        );
+    }
 }
