@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Plane({ isMovingDown }) {
-    const canvasWidth = 500;
-    const canvasHeight = 300;
+    const canvasWidth = 1000;
+    const canvasHeight = 500;
 
     const canvasRef = useRef(null);
     const imageRef = useRef(null);
@@ -33,7 +33,7 @@ export default function Plane({ isMovingDown }) {
             ctx.beginPath();
             ctx.moveTo(0, canvas.height);
             ctx.lineTo(position.x, position.y);
-            ctx.strokeStyle = "white";
+            ctx.strokeStyle = "#C3865A";
             ctx.lineWidth = 2;
             ctx.stroke();
 
@@ -87,10 +87,5 @@ export default function Plane({ isMovingDown }) {
         return () => cancelAnimationFrame(animationFrameId);
     }, [isMovingDown, position]);
 
-    return (
-        <canvas
-            ref={canvasRef}
-            style={{ background: "black", border: "1px solid red" }}
-        />
-    );
+    return <canvas ref={canvasRef} className="relative z-10" />;
 }

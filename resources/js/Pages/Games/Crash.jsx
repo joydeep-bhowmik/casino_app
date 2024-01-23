@@ -23,12 +23,14 @@ export default function Tower() {
         cashOut: false,
         ping: false,
         multiplier: 0,
+        cashOutAt: 0,
     });
 
     const placeBet = () => {
         if (state.bet > balance) {
             return alert.error("Insufficient funds");
         }
+
         send_message({ type: "start", bet: state.bet });
     };
 
@@ -77,6 +79,7 @@ export default function Tower() {
             setTimeout(() => {
                 setState((pre) => ({
                     ...pre,
+                    isMovingDown: false,
                     showPlane: false,
                 }));
             }, 2000);
@@ -117,6 +120,9 @@ export default function Tower() {
             let multiplier = 0;
             intervalId = setInterval(() => {
                 multiplier = multiplier + 0.1;
+                if (state.cashOutAt != 0 && multiplier >= state.cashOutAt) {
+                    return cashOut();
+                }
                 setState((pre) => ({ ...pre, multiplier: multiplier }));
                 send_message({
                     type: "check",
@@ -138,98 +144,158 @@ export default function Tower() {
 
     return (
         <GameLayout title="Crash">
-            <div className="w-full md:p-5 md:py-10 grid place-items-center Tower-bg min-h-64">
+            <div className="w-full relative md:p-5 md:py-10 grid place-items-center Tower-bg min-h-[500px]">
                 {state.showPlane ? (
                     <Plane isMovingDown={state.isMovingDown} />
                 ) : (
                     ""
                 )}
+                <div className="text-5xl w-fit font-bold absolute top-10 mx-auto left-0 right-0">
+                    {state.multiplier !== 0 ? state.multiplier.toFixed(1) : 0}
+                    {"x"}
+                </div>
+                <div
+                    className="absolute top-0 left-0 right-0 bottom-0 h-full w-full opacity-50"
+                    style={{
+                        background: `url(${url(
+                            `/assets/img/crashbg.jpg`
+                        )}), lightgray 50% / cover`,
+                        backgroundSize: "cover",
+                    }}
+                ></div>
             </div>
             <div className="flex items-center gap-2 mt-5">
-                <Input
-                    label="bet amount"
-                    prefix="$"
-                    allowClear={false}
-                    className="flex gap-1  items-center "
-                    inputClassName=""
-                    value={state.bet}
-                    onChange={(e) => {
-                        let value = e.target.value;
-                        if (value > balance) {
-                            alert.info("Insufficient balance");
-                            return;
-                        }
-                        setState((pre) => ({
-                            ...pre,
-                            bet: value,
-                        }));
-                    }}
-                >
-                    {[
-                        { mul: 1, label: "+1", mode: "plus" },
-                        { mul: 5, label: "+5", mode: "plus" },
-                        { mul: 10, label: "+10", mode: "plus" },
-                        { mul: 25, label: "+25", mode: "plus" },
-                        { mul: 0.5, label: "1/2" },
-                        { mul: 2, label: "2x" },
-                    ].map((o, i) => (
-                        <MultiplierButton
-                            key={i}
-                            onClick={(e) => {
-                                state.bet = parseFloat(state.bet, 10);
-                                o.mul = parseFloat(o.mul, 10);
-                                let bet = state.bet * o.mul;
-                                if (o.mode == "plus") {
-                                    bet = state.bet + o.mul;
-                                }
-                                if (bet > balance) {
-                                    return alert.error("Insufficient balance");
-                                }
-
-                                if (bet >= 0) {
-                                    setState((pre) => ({
-                                        ...pre,
-                                        bet: parseInt(bet),
-                                    }));
-                                }
+                <div className="w-full max-w-sm space-y-8">
+                    <div>
+                        <Input
+                            label="auto-cashout"
+                            prefix="$"
+                            allowClear={false}
+                            className="w-full flex items-center gap-1"
+                            inputClassName="w-[100px]"
+                            value={state.cashOutAt}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                setState((pre) => ({
+                                    ...pre,
+                                    cashOutAt: value,
+                                }));
                             }}
                         >
-                            {o.label}
-                        </MultiplierButton>
-                    ))}
+                            {[
+                                { mul: 1, label: "+1", mode: "plus" },
+                                { mul: 5, label: "+5", mode: "plus" },
+                                { mul: 10, label: "+10", mode: "plus" },
+                                { mul: 25, label: "+25", mode: "plus" },
+                            ].map((o, i) => (
+                                <MultiplierButton
+                                    key={i}
+                                    onClick={(e) => {
+                                        state.cashOutAt = parseFloat(
+                                            state.cashOutAt,
+                                            10
+                                        );
+                                        o.mul = parseFloat(o.mul, 10);
+                                        let cashOutAt = state.cashOutAt * o.mul;
+                                        if (o.mode == "plus") {
+                                            cashOutAt = state.cashOutAt + o.mul;
+                                        }
 
-                    <MultiplierButton
-                        onClick={(e) => {
+                                        if (cashOutAt >= 0) {
+                                            setState((pre) => ({
+                                                ...pre,
+                                                cashOutAt: parseInt(cashOutAt),
+                                            }));
+                                        }
+                                    }}
+                                    className="w-full"
+                                >
+                                    {o.label}
+                                </MultiplierButton>
+                            ))}
+                        </Input>
+                    </div>
+                    <Input
+                        label="bet amount"
+                        prefix="$"
+                        allowClear={false}
+                        className="w-full "
+                        inputClassName=""
+                        value={state.bet}
+                        onChange={(e) => {
+                            let value = e.target.value;
+                            if (value > balance) {
+                                alert.info("Insufficient balance");
+                                return;
+                            }
                             setState((pre) => ({
                                 ...pre,
-                                bet: balance,
+                                bet: value,
                             }));
                         }}
-                    >
-                        max
-                    </MultiplierButton>
-                </Input>
-                {state.cashOut ? (
-                    <PrimaryButton
-                        className="w-full max-w-xs -mb-6"
-                        disabled={state.betDisabled}
-                        onClick={cashOut}
-                    >
-                        {parseInt(state.bet) +
-                            parseInt(state.bet) * state.multiplier}
-                        {"cashout "}
-                    </PrimaryButton>
-                ) : (
-                    <PrimaryButton
-                        className="w-full max-w-xs -mb-6"
-                        disabled={state.betDisabled}
-                        onClick={placeBet}
-                    >
-                        {state.connection == "connecting"
-                            ? "connecting..."
-                            : "Place bet"}
-                    </PrimaryButton>
-                )}
+                    />
+                    <div className="flex gap-2 items-center">
+                        {[
+                            { mul: 1, label: "+1", mode: "plus" },
+                            { mul: 5, label: "+5", mode: "plus" },
+                            { mul: 10, label: "+10", mode: "plus" },
+                            { mul: 25, label: "+25", mode: "plus" },
+                        ].map((o, i) => (
+                            <MultiplierButton
+                                key={i}
+                                onClick={(e) => {
+                                    state.bet = parseFloat(state.bet, 10);
+                                    o.mul = parseFloat(o.mul, 10);
+                                    let bet = state.bet * o.mul;
+                                    if (o.mode == "plus") {
+                                        bet = state.bet + o.mul;
+                                    }
+                                    if (bet > balance) {
+                                        return alert.error(
+                                            "Insufficient balance"
+                                        );
+                                    }
+
+                                    if (bet >= 0) {
+                                        setState((pre) => ({
+                                            ...pre,
+                                            bet: parseInt(bet),
+                                        }));
+                                    }
+                                }}
+                                className="w-full"
+                            >
+                                {o.label}
+                            </MultiplierButton>
+                        ))}
+                    </div>
+
+                    {state.cashOut ? (
+                        <PrimaryButton
+                            className="w-full"
+                            disabled={state.betDisabled}
+                            onClick={cashOut}
+                        >
+                            {(
+                                parseFloat(state.bet) +
+                                parseFloat(state.bet) *
+                                    parseFloat(state.multiplier)
+                            ).toFixed(1)}{" "}
+                            {/* Rounding to 1 decimal place */}
+                            {" cashout "}
+                        </PrimaryButton>
+                    ) : (
+                        <PrimaryButton
+                            className="w-full "
+                            disabled={state.betDisabled}
+                            onClick={placeBet}
+                        >
+                            {state.connection == "connecting"
+                                ? "connecting..."
+                                : "Place bet"}
+                        </PrimaryButton>
+                    )}
+                </div>
             </div>
         </GameLayout>
     );

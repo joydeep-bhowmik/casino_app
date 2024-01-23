@@ -4,11 +4,11 @@ import Layout from "@/Layouts/Layout";
 import React, { useRef } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { Transition } from "@headlessui/react";
+import { useStore } from "@/Store/main";
 import { useAlert } from "react-alert";
 export default function RotetaSpin({ suitcase, recomended_suitcase }) {
     const alert = useAlert();
-
+    const updateBalance = useStore((state) => state.updateBalance);
     const [state, setState] = useState({
         spin: false,
         status: "open_case",
@@ -62,6 +62,7 @@ export default function RotetaSpin({ suitcase, recomended_suitcase }) {
         //sell
         if (res.type == "sell" && res.sold) {
             alert.show("Sold", { type: "success" });
+            updateBalance();
             setState((pre) => ({
                 ...pre,
                 status: "open_case",

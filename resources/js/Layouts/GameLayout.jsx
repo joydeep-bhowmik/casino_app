@@ -18,7 +18,7 @@ export default function GameLayout({ title, children }) {
                     {title ? <h2 className="text-2xl">{title}</h2> : ""}
                 </div>
             </div>
-            <div className="mt-10">{children}</div>
+            <div className="mt-10 p-5">{children}</div>
         </Layout>
     );
 }

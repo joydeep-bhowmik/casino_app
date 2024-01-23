@@ -36,6 +36,10 @@ class KenoGameController extends Controller
     {
         $object = (object)$arr;
 
+        if (!$object->game) return $this->error('Invalid game');
+
+        if (!$object->user) return $this->error('Invalid user');
+
         if (!$this->bet) return $this->error('Invalid bet');
 
         if (!$this->risk || !in_array($this->risk, ['low', 'medium', 'high'])) {
@@ -163,7 +167,7 @@ class KenoGameController extends Controller
 
             $round->save();
 
-            return ['info' => 'Round finished'];
+            return ['finished' => 'Game over'];
         }
 
 

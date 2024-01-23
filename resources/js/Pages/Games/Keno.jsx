@@ -111,6 +111,7 @@ export default function Keno() {
                 ...pre,
                 disabled: true,
                 gridLocked: false,
+                betDisabled: true,
             }));
 
             return alert.success(res.success.message);
@@ -121,7 +122,18 @@ export default function Keno() {
         }
 
         if (res.finished) {
-            return alert.success(res.finished);
+            updateBalance();
+            alert.success(res.finished);
+
+            setTimeout(() => {
+                setState((pre) => ({
+                    ...pre,
+                    tiles: initialTiles,
+                    betDisabled: false,
+                }));
+            }, 2000);
+
+            return;
         }
     };
 

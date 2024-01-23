@@ -156,49 +156,61 @@ export default function Tower() {
 
     return (
         <GameLayout title="Tower">
-            <div className="w-full md:p-5 md:py-10 grid place-items-center Tower-bg">
-                <div className="w-full grid grid-cols-3 gap-3 max-w-lg">
-                    {state.tiles.map((i) => {
-                        const type = i.type;
-                        var block = "";
-                        const className = "";
-                        switch (type) {
-                            case "red":
-                                block = (
-                                    <Red className={className}>{i.number}</Red>
-                                );
-                                break;
-                            case "green":
-                                block = (
-                                    <Green className={className}>
-                                        {i.number}
-                                    </Green>
-                                );
-                                break;
-                            default:
-                                block = (
-                                    <Block className={className}>
-                                        {i.number}
-                                    </Block>
-                                );
-                        }
+            <div
+                className="w-full md:p-5 md:py-10 grid place-items-center tower-bg backdrop-opacity-50"
+                style={{
+                    background: `url(${url(
+                        `/assets/img/towerbg.png`
+                    )}), lightgray 50% / cover`,
+                    backgroundSize: "cover",
+                }}
+            >
+                <div className="bg p-10 border-[20px] rounded border-[#1A1A1A]">
+                    <div className="w-full grid grid-cols-3 gap-3 max-w-lg">
+                        {state.tiles.map((i) => {
+                            const type = i.type;
+                            var block = "";
+                            const className = "";
+                            switch (type) {
+                                case "red":
+                                    block = (
+                                        <Red className={className}>
+                                            {i.number}
+                                        </Red>
+                                    );
+                                    break;
+                                case "green":
+                                    block = (
+                                        <Green className={className}>
+                                            {i.number}
+                                        </Green>
+                                    );
+                                    break;
+                                default:
+                                    block = (
+                                        <Block className={className}>
+                                            {i.number}
+                                        </Block>
+                                    );
+                            }
 
-                        return (
-                            <span
-                                onClick={() => {
-                                    send_message({
-                                        type: "check",
-                                        number: i.number,
-                                        round_id: roundId,
-                                    });
-                                }}
-                                key={i.number}
-                                disabled={state.gridLocked}
-                            >
-                                {block}
-                            </span>
-                        );
-                    })}
+                            return (
+                                <span
+                                    onClick={() => {
+                                        send_message({
+                                            type: "check",
+                                            number: i.number,
+                                            round_id: roundId,
+                                        });
+                                    }}
+                                    key={i.number}
+                                    disabled={state.gridLocked}
+                                >
+                                    {block}
+                                </span>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
             <div className="flex items-center gap-2 mt-5">
