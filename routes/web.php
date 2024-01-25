@@ -45,13 +45,13 @@ Route::get('/get-token', [SocketController::class, 'create']);
 
 Volt::route('listen', 'websocket');
 
-$pages = Page::all();
+// $pages = Page::all();
 
-foreach ($pages as $page) {
-    Route::get($page->slug, function () use ($page) {
-        return  Inertia::render('Page', compact('page'));
-    });
-}
+// foreach ($pages as $page) {
+//     Route::get($page->slug, function () use ($page) {
+//         return  Inertia::render('Page', compact('page'));
+//     });
+// }
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

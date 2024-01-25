@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Bodies, Composite, Engine, Render, Runner, World } from "matter-js";
+import Matter from "matter-js";
+
+Matter.Resolver._restingThresh = 0.00001;
 
 function getConfig() {
     const pins = {
@@ -13,7 +16,7 @@ function getConfig() {
     };
 
     const engine = {
-        engineGravity: 1.0,
+        engineGravity: 2,
     };
 
     const world = {
@@ -34,6 +37,14 @@ function getConfig() {
     };
 }
 
+function random(min, max) {
+    const random = Math.random();
+    min = Math.round(min);
+    max = Math.floor(max);
+
+    return random * (max - min) + min;
+}
+
 const Plinko = () => {
     const config = getConfig();
 
@@ -49,7 +60,7 @@ const Plinko = () => {
     const worldHeight = worldConfig.height;
 
     const engine = Engine.create();
-    const [lines, setLines] = useState(16);
+    const [lines, setLines] = useState(10);
     const calculatedPinSize = Math.max(2, 18 - lines);
     const calculatedPinGap = Math.max(20, 50 - lines * 2);
 
@@ -155,6 +166,34 @@ const Plinko = () => {
         }
     );
 
+    const addBall = useCallback(
+        (ballValue) => {
+            const minBallX =
+                worldWidth / 2 - calculatedPinSize * 3 + calculatedPinGap;
+            const maxBallX =
+                worldWidth / 2 -
+                calculatedPinSize * 3 -
+                calculatedPinGap +
+                calculatedPinGap / 2;
+
+            const ballX = random(minBallX, maxBallX);
+            const ballColor = ballValue <= 0 ? colors.text : colors.purple;
+            const ball = Bodies.circle(ballX, 20, ballConfig.ballSize, {
+                restitution: random(1.1, 1.3),
+                friction: random(0.6, 0.8),
+                label: `ball-${ballValue}`,
+                id: new Date().getTime(),
+                frictionAir: 0.06,
+                render: {
+                    fillStyle: ballColor,
+                },
+                isStatic: false,
+            });
+            Composite.add(engine.world, ball);
+        },
+        [lines]
+    );
+
     const floor = Bodies.rectangle(0, worldWidth + 10, worldWidth * 10, 40, {
         label: "block-1",
         render: {
@@ -167,6 +206,14 @@ const Plinko = () => {
 
     return (
         <div className="grid place-items-center h-screen">
+            <button
+                onClick={() => {
+                    addBall(1);
+                }}
+            >
+                {" "}
+                Ball
+            </button>
             <div id="plinko" className="border w-fit "></div>
         </div>
     );
