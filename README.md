@@ -1,1 +1,54 @@
-# casino app
+# Casino App Setup Guide
+
+To successfully run the casino app, follow these organized steps in a Markdown format:
+
+## Step 1: Start a Web Server
+
+Turn on any web server of your choice, such as XAMPP or WAMP.
+
+## Step 2: Set Up Database
+
+In the root folder of the project, locate the `.env` file and edit the `DB_DATABASE` variable to match the desired name for your database (e.g., `casino_app`).
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=casino_app
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+## Step 3: Create Database
+
+Create a database named `casino_app` in your MySQL server. You can use a database management tool or the command line to create the database.
+
+## Step 4: Migrate Database
+
+Run the following command to create the necessary tables in the database:
+
+```bash
+php artisan migrate
+```
+
+## Step 5: Serve the App
+
+Run the following command to start serving the Laravel app:
+
+```bash
+php artisan serve
+```
+
+## Step 6: Start Node.js Server
+
+Run the following command to serve the Node.js server:
+
+```bash
+npm run dev
+```
+
+## Step 7: Access the App
+
+Visit [http://127.0.0.1:8000/games/plinko](http://127.0.0.1:8000/games/plinko) in your web browser to access the Plinko game within the casino app.
+
+Now you should have the casino app up and running, with the Plinko game accessible through the provided URL.
