@@ -58,7 +58,7 @@
         bottom: -40px;
     }
     .admin-nav-link {
-        @apply capitalize w-full py-2 px-3 rounded hover:bg-slate-100 flex gap-2 items-center;
+        @apply capitalize w-full p-3 rounded hover:bg-slate-100 flex gap-2 items-center;
     }
     .admin-nav-link.active {
         @apply bg-slate-100;

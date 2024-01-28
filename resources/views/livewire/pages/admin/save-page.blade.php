@@ -29,7 +29,7 @@ mount(function (Request $request) {
 $save = function () {
     $this->validate([
         'title' => 'required',
-        'slug' => 'required|alpha_dash|max:255,unique:pages,slug,' . $this->id,
+        'slug' => 'required|lowercase|alpha_dash|max:255,unique:pages,slug,' . $this->id,
         'content' => 'required',
     ]);
 

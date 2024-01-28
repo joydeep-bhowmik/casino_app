@@ -36,7 +36,7 @@ $save = function () {
     $this->validate([
         'name' => 'required',
         'thumbnail' => 'required',
-        'slug' => 'required|alpha_dash|max:255,unique:games,slug,' . $this->id,
+        'slug' => 'required|lowercase|alpha_dash|max:255,unique:games,slug,' . $this->id,
         'uid' => 'required|alpha_dash|max:255,unique:games,uid,' . $this->id,
         'url' => 'nullable',
         'description' => 'nullable',
@@ -121,7 +121,7 @@ $delete = function () {
         </x-section>
 
         <div class="lg:max-w-96 w-full">
-            <x-section class="w-full" title="image">
+            <x-section class="w-full space-y-5 py-5" title="image">
 
                 <livewire:choose-image target="#game-image" />
 

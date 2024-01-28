@@ -15,6 +15,7 @@ use App\Http\Controllers\KenoController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CrashController;
 use App\Http\Controllers\MinerController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\TowerController;
 use App\Http\Controllers\PlinkoController;
 use App\Http\Controllers\RotetaController;
@@ -45,13 +46,8 @@ Route::get('/get-token', [SocketController::class, 'create']);
 
 Volt::route('listen', 'websocket');
 
-// $pages = Page::all();
+Route::get('/pages/{slug}', [PageController::class, 'index']);
 
-// foreach ($pages as $page) {
-//     Route::get($page->slug, function () use ($page) {
-//         return  Inertia::render('Page', compact('page'));
-//     });
-// }
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

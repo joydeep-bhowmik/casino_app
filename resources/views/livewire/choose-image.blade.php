@@ -90,7 +90,10 @@ with(function () {
 
     <div class="w-full" x-on:click="showUploads=true">
 
-        <span class="cursor-pointer capitalize text-blue-500"> {{ $label }}</span>
+        <div class="w-fit cursor-pointer rounded-lg border-2 border-blue-500 p-2 font-bold capitalize text-blue-500"
+            :class="showUploads ? 'opacity-50' : ''">
+            {{ $label }}
+        </div>
 
     </div>
 

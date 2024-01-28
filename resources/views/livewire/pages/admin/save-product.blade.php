@@ -40,7 +40,7 @@ $save = function () {
         'name' => 'required|string|max:255',
         'suitcase' => 'nullable|exists:suitcases,id',
         'price' => 'required|numeric',
-        'slug' => 'required|alpha_dash|max:255,unique:products,slug,' . $this->id,
+        'slug' => 'required|lowercase|alpha_dash|max:255,unique:products,slug,' . $this->id,
         'compare_at_price' => 'nullable|numeric',
         'description' => 'nullable',
         'image' => 'required',
@@ -142,7 +142,7 @@ with(function () {
         </x-section>
 
         <div class="lg:max-w-96 w-full">
-            <x-section class="w-full" title="image">
+            <x-section class="w-full space-y-5 py-2" title="image">
 
                 <livewire:choose-image target="#Product-image" />
 

@@ -19,6 +19,6 @@ title('All Suitcases');
     </a>
 
     <x-section title="Suitcases">
-        <livewire:datatables.suitcases-table />
+        <livewire:datatables.suitcases-table lazy />
     </x-section>
 </div>

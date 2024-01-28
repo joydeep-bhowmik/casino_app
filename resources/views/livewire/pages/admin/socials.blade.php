@@ -1,8 +1,8 @@
 <?php
 
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, title};
 
-//
+title('All Socials');
 
 ?>
 
@@ -18,6 +18,6 @@ use function Livewire\Volt\{state};
     </a>
 
     <x-section title="socials">
-        <livewire:datatables.socials-table />
+        <livewire:datatables.socials-table lazy />
     </x-section>
 </div>

@@ -19,6 +19,6 @@ title('All Pages');
     </a>
 
     <x-section title="Pages">
-        <livewire:datatables.pages-table />
+        <livewire:datatables.pages-table lazy />
     </x-section>
 </div>

@@ -19,6 +19,6 @@ title('All Orders');
     </a>
 
     <x-section title="Orders">
-        <livewire:datatables.orders-table />
+        <livewire:datatables.orders-table lazy />
     </x-section>
 </div>

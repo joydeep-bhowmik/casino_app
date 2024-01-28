@@ -16,7 +16,7 @@ class ProductsTable extends Datatable
                 ->value(function ($row) {
                     $image = url($row->image_url);
                     return <<<HTML
-                    <div class="h-20 border w-fit">
+                    <div class="h-20  w-fit">
                         <img src="$image" class="object-contain h-full"/>
                     </div>  
                     HTML;

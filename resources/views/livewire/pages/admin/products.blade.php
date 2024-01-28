@@ -18,6 +18,6 @@ title('All Products');
     </a>
 
     <x-section title="products">
-        <livewire:datatables.products-table />
+        <livewire:datatables.products-table lazy />
     </x-section>
 </div>

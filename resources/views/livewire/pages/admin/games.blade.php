@@ -19,6 +19,6 @@ title('All games');
     </a>
 
     <x-section title="Games">
-        <livewire:datatables.games-table />
+        <livewire:datatables.games-table lazy />
     </x-section>
 </div>

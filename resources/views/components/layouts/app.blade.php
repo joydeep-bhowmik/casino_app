@@ -9,16 +9,39 @@
 </head>
 @vite(['resources/css/app.css', 'resources/js/bootstrap.js'])
 
-<body class="bg-slate-50">
-    <div>
-        <nav class="bg-white p-3 shadow-sm">
-            <h1 class="text-lg font-bold">Admin panel</h1>
+<body class="bg-slate-50" x-data="{
+    showSideBar: true
+}">
+    <div class="bg-white shadow-sm">
+
+        <nav class="mx-auto flex max-w-7xl items-center gap-2 p-4">
+
+            <button class="text-black lg:hidden" x-on:click="showSideBar=!showSideBar" x-transition>
+
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+
+            </button>
+
+            <a href="{{ url('admin') }}" wire:navigate>
+                <h1 class="text-lg font-bold italic">Admin Panel</h1>
+            </a>
+
         </nav>
-        <div class="flex">
-            <x-admin-nav class="hidden md:block" />
-            <main class="w-full border p-4">{{ $slot }}</main>
-        </div>
+
     </div>
+
+    <div class="mx-auto max-w-7xl divide-y lg:flex lg:divide-x">
+        <div class="w-full md:max-w-[300px]" :class="showSideBar ? 'hidden lg:block' : 'block'" x-transition>
+            <x-admin-nav />
+        </div>
+
+        <main class="w-full p-4">{{ $slot }}</main>
+    </div>
+
     <x-alert />
 </body>
 <script>
