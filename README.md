@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-got stuck
-=======
 # Casino App Setup Guide
 
 To successfully run the casino app, follow these organized steps in a Markdown format:
@@ -55,4 +52,3 @@ npm run dev
 Visit [http://127.0.0.1:8000/games/plinko](http://127.0.0.1:8000/games/plinko) in your web browser to access the Plinko game within the casino app.
 
 Now you should have the casino app up and running, with the Plinko game accessible through the provided URL.
->>>>>>> 84997aaaad5503657a6c6eed8e229f12025fa3e0

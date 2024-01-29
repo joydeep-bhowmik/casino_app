@@ -1,5 +1,5 @@
 import { Children, forwardRef, useRef } from "react";
-
+import cn from "@/Libs/cn";
 export default function Input({
     type = "price",
     label = null,
@@ -14,15 +14,22 @@ export default function Input({
     const input = useRef(null);
 
     return (
-        <div className={`w-full text-slate-600  ${wrapperClassName}`}>
-            <span className="uppercase tracking-wide font-bold text-xs ">
-                {label ? label : ""}
-            </span>
-            <div className={`mt-3 ${className}`}>
+        <div className={cn(["w-full text-slate-600", wrapperClassName])}>
+            {label ? (
+                <span className="uppercase tracking-wide font-bold text-xs ">
+                    {label}
+                </span>
+            ) : (
+                ""
+            )}
+            <div className={cn(["mt-3", className])}>
                 <div className=" border-[#333] border-2 rounded  flex items-center px-3">
                     {prefix}
                     <input
-                        className={`text-[#FFF] bg-transparent !ring-0 !border-0 w-full hide-input-increment ${inputClassName}`}
+                        className={cn([
+                            "text-[#FFF] bg-transparent !ring-0 !border-0 w-full hide-input-increment ",
+                            inputClassName,
+                        ])}
                         ref={input}
                         {...props}
                     />

@@ -35,7 +35,8 @@
     </div>
 
     <div class="mx-auto max-w-7xl divide-y lg:flex lg:divide-x">
-        <div class="w-full md:max-w-[300px]" :class="showSideBar ? 'hidden lg:block' : 'block'" x-transition>
+        <div class="w-full md:max-w-[300px]" :class="showSideBar ? 'hidden lg:block ' : 'block slide-from-left'"
+            x-transition>
             <x-admin-nav />
         </div>
 

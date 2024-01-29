@@ -1,7 +1,7 @@
 <nav {{ $attributes->merge(['class' => 'min-h-screen w-full overflow-y-auto']) }} x-transition>
     @persist('nav')
         <div class="mt-5 divide-y p-3 text-sm font-semibold text-gray-700">
-            <a class="admin-nav-link" href="">
+            <a class="admin-nav-link" href="{{ url(route('admin.dashboard')) }}" wire:navigate>
 
                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path

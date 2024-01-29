@@ -30,6 +30,13 @@ class ProductsTable extends Datatable
                 ->label('Price')
                 ->sortable(),
 
+            $this->field('description')
+                ->label('Description')
+                ->value(function ($row) {
+                    return (strlen($row->description) > 50 ? substr($row->description, 0, 50) . '...' : $row->description);
+                })
+                ->searchable(),
+
             $this->field('...')
                 ->value(function ($row) {
                     $link = route('admin.products.edit', $row->id);

@@ -11,7 +11,7 @@ export default function MobileMenu({ open, className, ...props }) {
             <div
                 className={
                     className +
-                    " lg:hidden  fixed top-20 w-full left-0 right-0 bg-slate-950 p-4 space-y-5 " +
+                    " lg:hidden absolute z-10  top-20 w-full left-0 right-0 bg-slate-950 p-4 space-y-5 " +
                     (open ? "block" : "hidden ")
                 }
                 {...props}
