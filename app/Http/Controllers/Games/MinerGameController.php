@@ -15,7 +15,7 @@ class MinerGameController extends Controller
     public $multiplier;
     public int $number_of_tiles = 25;
 
-    public function __construct(public int $bid, public int $mines, public  $user_id)
+    public function __construct(public int $bet, public int $mines, public  $user_id)
     {
     }
 
@@ -52,27 +52,38 @@ class MinerGameController extends Controller
         $round->game_data = json_encode($game_data);
 
         if ($round->save()) {
-            $user->withdraw($this->bid);
+            $user->withdraw($this->bet);
             return ['success' => $round->id];
         }
     }
 
 
-    function configure()
+
+    public function configure(): array
     {
+        // Calculate the number of gems
         $this->gems = (int)($this->number_of_tiles - $this->mines);
 
+        // Calculate the multiplier
         $this->multiplier = 1 / $this->gems;
 
-        $desk = range(1, $this->number_of_tiles - 1);
-        shuffle($desk);
+        // Generate the tiles array
+        $tiles = range(1, $this->number_of_tiles);
 
+        // Shuffle the tiles array
+        shuffle($tiles);
+
+        // Split tiles into mines and gems
+        $mines = array_slice($tiles, 0, $this->mines);
+        $gems = array_slice($tiles, $this->mines);
+
+        // Return the configuration
         return [
-            'bid' => $this->bid,
+            'bet' => $this->bet, // Changed uid to bet
             'number_of_mines' => $this->mines,
             'number_of_gems' => $this->gems,
-            'mines' => array_slice($desk, 0, $this->mines),
-            'gems' => array_slice($desk, $this->mines, $this->gems),
+            'mines' => $mines,
+            'gems' => $gems,
             'collected_gems' => [],
         ];
     }
@@ -88,7 +99,7 @@ class MinerGameController extends Controller
         if ($this->mines + $this->gems > $this->number_of_tiles) {
             return $this->error('Invalid mines');
         }
-        if ($this->bid > $object->user->balanceInt) {
+        if ($this->bet > $object->user->balanceInt) {
             return $this->error('Insufficient funds');
         }
     }
@@ -130,7 +141,7 @@ class MinerGameController extends Controller
 
             $multiplier = count($data->collected_gems) * $round->multiplier;
 
-            $payout = (int)($data->bid + ($data->bid * $multiplier));
+            $payout = (int)($data->bet + ($data->bet * $multiplier));
 
             $round->status = 'finished';
 
@@ -144,6 +155,7 @@ class MinerGameController extends Controller
                 'type' => 'mine',
                 'number' => $number,
                 'reveal_mines' => $data->mines,
+                'payout' => $round->payout . ' points collected',
             ]];
         }
     }

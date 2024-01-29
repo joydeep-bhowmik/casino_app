@@ -167,7 +167,11 @@ class KenoGameController extends Controller
 
             $round->save();
 
-            return ['finished' => 'Game over'];
+            return ['finished' => [
+                'message' => 'Game over',
+                'payout' => $round->payout . ' points collected',
+                'balance' => $user->balanceInt,
+            ]];
         }
 
 

@@ -1,15 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import GameLayout from "@/Layouts/GameLayout";
 import Input from "@/Components/Games/Input";
 import MultiplierButton from "@/Components/Games/MultiplierButton";
-import GameLayout from "@/Layouts/GameLayout";
-import SmallMine from "@/Components/Games/Miner/SmallMine";
-import SmallGem from "@/Components/Games/Miner/SmallGem";
 import PrimaryButton from "@/Components/PrimaryButton";
-import Block from "@/Components/Games/Miner/Block";
-import RedMine from "@/Components/Games/Miner/RedMine";
-import DarkGem from "@/Components/Games/Miner/DarkGem";
+import SmallMine from "./SmallMine";
+import SmallGem from "./SmallGem";
+import Block from "./Block";
+import RedMine from "./RedMine";
+import DarkGem from "./DarkGem";
 import { useAlert } from "react-alert";
 import { useStore } from "@/Store/main";
+import {
+    clickSound,
+    gameOverSound,
+    successSound,
+    errorSound,
+} from "@/Libs/sounds";
 
 export default function Miner({}) {
     const alert = useAlert();
@@ -44,15 +50,17 @@ export default function Miner({}) {
     const placeBet = () => {
         resetTiles();
         if (!state.bet) {
-            return alert.info("Enter bid ammount");
+            errorSound();
+            return alert.info("Enter bet ammount");
         }
         if (!state.mines) {
+            errorSound();
             return alert.info("Enter number of mines");
         }
         updateBalance(balance - state.bet);
         send_message({
             type: "start",
-            bid: state.bet,
+            bet: state.bet,
             mines: state.mines,
         });
     };
@@ -82,9 +90,11 @@ export default function Miner({}) {
         let tiles = [...initialTiles]; // Create a copy of initialTiles
 
         for (let i = 0; i < tiles.length; i++) {
-            tiles[i] = { ...tiles[i], number: i };
-            tiles[i].type = mines.includes(i) ? "mine" : "gem";
+            tiles[i] = { ...tiles[i], number: i + 1 };
+            tiles[i].type = mines.includes(i + 1) ? "mine" : "gem";
         }
+
+        console.log(tiles);
 
         setState((prevState) => ({
             ...prevState,
@@ -99,13 +109,19 @@ export default function Miner({}) {
     conn.onmessage = function (res) {
         res = JSON.parse(res.data);
         console.log(res, state);
+
         if (res.error) {
+            errorSound();
             return alert.error(res.error);
         }
+
         if (res.info) {
+            errorSound();
             return alert.info(res.info);
         }
+
         if (res.success) {
+            successSound();
             updateRoundId(res.success);
 
             setState((pre) => ({
@@ -120,19 +136,23 @@ export default function Miner({}) {
 
             if (res.block.type === "mine") {
                 updateBalance();
+                gameOverSound();
 
                 alert.info("Game Over");
+                alert.success(res.block.payout);
 
                 setTimeout(() => {
                     showAll(res.block.reveal_mines);
-                }, 500);
+                }, 300);
 
                 return;
             }
+            successSound();
         }
     };
 
     const send_message = (props) => {
+        clickSound();
         console.log(props);
         const msg = JSON.stringify(props);
         conn.send(msg);

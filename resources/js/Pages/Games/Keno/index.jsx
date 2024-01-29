@@ -1,8 +1,8 @@
-import Block from "@/Components/Games/Keno/Block";
-import Gem from "@/Components/Games/Keno/Gem";
-import Red from "@/Components/Games/Keno/Red";
-import Green from "@/Components/Games/Keno/Green";
 import GameLayout from "@/Layouts/GameLayout";
+import Block from "./Block";
+import Gem from "./Gem";
+import Red from "./Red";
+import Green from "./Green";
 import { useAlert } from "react-alert";
 import { useStore } from "@/Store/main";
 import Input from "@/Components/Games/Input";
@@ -10,6 +10,12 @@ import MultiplierButton from "@/Components/Games/MultiplierButton";
 import { useEffect, useState } from "react";
 import Select from "@/Components/Games/Select";
 import PrimaryButton from "@/Components/PrimaryButton";
+import {
+    clickSound,
+    gameOverSound,
+    successSound,
+    errorSound,
+} from "@/Libs/sounds";
 
 export default function Keno() {
     const alert = useAlert();
@@ -30,12 +36,14 @@ export default function Keno() {
         bet: "",
         risk: "low",
         gridLocked: true,
+        diamonds: [],
     });
 
     const resetBlocks = () => {
         setState((pre) => ({
             ...pre,
             tiles: initialTiles,
+            diamonds: [],
         }));
     };
 
@@ -54,6 +62,10 @@ export default function Keno() {
             setState((pre) => ({
                 ...pre,
                 tiles: updatedTiles,
+                diamonds:
+                    type == "gem"
+                        ? [...pre.diamonds, number]
+                        : [...pre.diamonds],
             }));
         } else {
             console.log(`Tile ${number} not found`);
@@ -79,6 +91,9 @@ export default function Keno() {
 
     const placeBet = () => {
         resetBlocks();
+        if (!state.bet) {
+            return alert.info("Invalid bet amount");
+        }
 
         if (state.bet > balance) {
             return alert.error("Insufficient funds");
@@ -97,14 +112,17 @@ export default function Keno() {
         console.log("recieved : ", res);
 
         if (res.error) {
+            errorSound();
             return alert.error(res.error);
         }
 
         if (res.info) {
+            errorSound();
             return alert.info(res.info);
         }
 
         if (res.success) {
+            successSound();
             updateRoundId(res.success.round_id);
 
             setState((pre) => ({
@@ -119,11 +137,15 @@ export default function Keno() {
 
         if (res.block) {
             change_block({ type: res.block.type, number: res.block.number });
+            if (res.block.type == "gem") successSound();
         }
 
         if (res.finished) {
-            updateBalance();
-            alert.success(res.finished);
+            console.log(res.finished);
+            gameOverSound();
+            updateBalance(res.finished.balance);
+            alert.success(res.finished.payout);
+            alert.success(res.finished.message);
 
             setTimeout(() => {
                 setState((pre) => ({
@@ -139,6 +161,7 @@ export default function Keno() {
 
     const send_message = (json) => {
         console.log("sending : ", json);
+        clickSound();
         conn.send(JSON.stringify(json));
     };
 
@@ -162,7 +185,20 @@ export default function Keno() {
 
     return (
         <GameLayout title="Keno">
-            <div className="w-full md:p-5 md:py-10 grid place-items-center keno-bg">
+            <div className="w-full md:p-5 md:py-10 grid grid-cols-[auto_auto_auto] place-items-center keno-bg relative">
+                <div className="text-center font-bold space-y-5">
+                    <span className="text-white text-sm">Diamonds</span>
+                    <div
+                        className=" w-10 h-10 mx-auto"
+                        style={{
+                            backgroundImage: `url(${url(
+                                "/assets/img/gem.png"
+                            )})`,
+                            backgroundSize: "cover",
+                        }}
+                    ></div>
+                    <span>{state.diamonds.length ?? ""}x</span>
+                </div>
                 <div className="w-full grid grid-cols-8 gap-3 max-w-lg">
                     {state.tiles.map((i) => {
                         const type = i.type;

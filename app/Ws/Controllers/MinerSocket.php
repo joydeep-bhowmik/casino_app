@@ -21,9 +21,9 @@ class MinerSocket extends WsController
             $response = ['error' => 'Login'];
         }
 
-        if ($data->type == 'start' && !in_array(null, [$data->bid, $data->mines, $user])) {
+        if ($data->type == 'start' && !in_array(null, [$data->bet, $data->mines, $user])) {
 
-            $game = new MinerGameController(bid: $data->bid, mines: $data->mines, user_id: $user->id);
+            $game = new MinerGameController(bet: $data->bet, mines: $data->mines, user_id: $user->id);
 
             $response = $game->start();
         }

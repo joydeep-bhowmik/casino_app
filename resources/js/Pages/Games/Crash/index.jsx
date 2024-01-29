@@ -5,7 +5,7 @@ import Input from "@/Components/Games/Input";
 import MultiplierButton from "@/Components/Games/MultiplierButton";
 import { useEffect, useState } from "react";
 import PrimaryButton from "@/Components/PrimaryButton";
-import Plane from "@/Components/Games/Crash/Plane";
+import Plane from "./Plane";
 
 export default function Tower() {
     const alert = useAlert();
@@ -14,7 +14,7 @@ export default function Tower() {
     const roundId = useStore((state) => state.roundId);
     const updateRoundId = useStore((state) => state.updateRoundId);
 
-    const [state, setState] = useState({
+    const initialState = {
         betDisabled: true,
         connection: "connecting",
         bet: 0,
@@ -24,13 +24,16 @@ export default function Tower() {
         ping: false,
         multiplier: 0,
         cashOutAt: 0,
-    });
+        seconds: [],
+        multipliers: [],
+    };
+
+    const [state, setState] = useState(initialState);
 
     const placeBet = () => {
         if (state.bet > balance) {
             return alert.error("Insufficient funds");
         }
-
         send_message({ type: "start", bet: state.bet });
     };
 
@@ -118,12 +121,23 @@ export default function Tower() {
 
         if (state.ping) {
             let multiplier = 0;
+            let second = 0;
+            let multipliers = [];
+            let seconds = [];
             intervalId = setInterval(() => {
                 multiplier = multiplier + 0.1;
+                second++;
                 if (state.cashOutAt != 0 && multiplier >= state.cashOutAt) {
                     return cashOut();
                 }
-                setState((pre) => ({ ...pre, multiplier: multiplier }));
+                multipliers.push(multiplier);
+                seconds.push(seconds);
+                setState((pre) => ({
+                    ...pre,
+                    multiplier: multiplier,
+                    multipliers: multipliers,
+                    seconds: seconds,
+                }));
                 send_message({
                     type: "check",
                     number: multiplier,
@@ -150,15 +164,28 @@ export default function Tower() {
                 ) : (
                     ""
                 )}
-                <div className="text-5xl w-fit font-bold absolute top-10 mx-auto left-0 right-0">
-                    {state.multiplier !== 0 ? state.multiplier.toFixed(1) : 0}
-                    {"x"}
+                <div className="w-fit  absolute top-10 mx-auto left-0 right-0">
+                    {state.multiplier !== 0 ? (
+                        <>
+                            <div className="text-5xl text-green-500 font-bold text-center">
+                                {state.multiplier.toFixed(1)}
+                                {"x"}
+                            </div>
+                            <div>Current payout</div>
+                        </>
+                    ) : (
+                        ""
+                    )}
                 </div>
+                <div className="multipliers">
+                    {state.multipliers.map((e) => e)}
+                </div>
+                <div className="times">{state.seconds.map((e) => e)}</div>
                 <div
                     className="absolute top-0 left-0 right-0 bottom-0 h-full w-full opacity-50"
                     style={{
                         background: `url(${url(
-                            `/assets/img/crashbg.jpg`
+                            `/assets/img/crashbg.png?aaa`
                         )}), lightgray 50% / cover`,
                         backgroundSize: "cover",
                     }}
@@ -172,7 +199,7 @@ export default function Tower() {
                             prefix="$"
                             allowClear={false}
                             className="w-full flex items-center gap-1"
-                            inputClassName="w-[100px]"
+                            inputClassName=""
                             value={state.cashOutAt}
                             onChange={(e) => {
                                 let value = e.target.value;
@@ -272,7 +299,7 @@ export default function Tower() {
 
                     {state.cashOut ? (
                         <PrimaryButton
-                            className="w-full"
+                            className="w-full !text-black"
                             disabled={state.betDisabled}
                             onClick={cashOut}
                         >
@@ -286,7 +313,7 @@ export default function Tower() {
                         </PrimaryButton>
                     ) : (
                         <PrimaryButton
-                            className="w-full "
+                            className="w-full !text-black"
                             disabled={state.betDisabled}
                             onClick={placeBet}
                         >

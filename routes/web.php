@@ -1,10 +1,5 @@
 <?php
 
-
-
-
-
-use App\Models\Page;
 use Inertia\Inertia;
 
 use Livewire\Volt\Volt;
@@ -136,7 +131,8 @@ Route::any('/user-balance', function (Request $request) {
     return $request->user()?->balanceInt;
 });
 Route::any('/add-user-balance', function (Request $request) {
-    return $request->user()?->deposit($request->amount ?? 100);
+
+    return $request->user()?->deposit($request->amount ?? 100) ? $request->user()?->balanceInt : '';
 });
 
 require __DIR__ . '/auth.php';

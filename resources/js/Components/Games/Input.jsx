@@ -27,7 +27,7 @@ export default function Input({
                     {prefix}
                     <input
                         className={cn([
-                            "text-[#FFF] bg-transparent !ring-0 !border-0 w-full hide-input-increment ",
+                            "text-[#FFF] min-w-[100px] bg-transparent !ring-0 !border-0 w-full hide-input-increment ",
                             inputClassName,
                         ])}
                         ref={input}

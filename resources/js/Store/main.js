@@ -13,8 +13,9 @@ export const useStore = create((set) => ({
         axios
             .post(url("/add-user-balance"))
             .then((res) => {
-                this.updateBalance();
+                set({ balance: res.data });
             })
+            .catch((error) => console.error(error))
             .finally(() => {
                 set({ updating_balance: false });
             });

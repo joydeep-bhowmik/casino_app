@@ -118,7 +118,9 @@
         }
     }
     /* Crash.css */
-
+    .w-\[100px\] {
+        width: 100px;
+    }
     .crash-container {
         width: 5px;
         height: 50px;
