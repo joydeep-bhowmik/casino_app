@@ -35,10 +35,10 @@ class CrashSocket extends WsController
 
             return $from->send(json_encode($response));
         }
-        // if ($data->type == "check" && isset($data->number, $data->round_id)) {
+        if ($data->type == "check" && isset($data->number, $data->round_id)) {
 
-        //     $response = CrashGameController::check(number: $data->number, round_id: $data->round_id, user_id: $user->id);
-        // }
+            $response = CrashGameController::check(number: $data->number, round_id: $data->round_id, user_id: $user->id);
+        }
 
 
 

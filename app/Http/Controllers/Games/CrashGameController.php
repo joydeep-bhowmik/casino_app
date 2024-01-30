@@ -83,7 +83,7 @@ class CrashGameController extends Controller
 
         return [
             'bet' => $this->bet,
-            'crash_at' => 1,
+            'crash_at' => mt_rand(1, 10) / 10
 
         ];
     }
@@ -127,6 +127,7 @@ class CrashGameController extends Controller
 
             return ['crash' => 1];
         }
+        return ['hhe' => 'sss'];
     }
 
     static function cashout($round_id, $user_id)
@@ -147,7 +148,7 @@ class CrashGameController extends Controller
 
             $user->deposit($cashout);
 
-            return ['cashout' => 'Cashout success full .' . $cashout];
+            return ['cashout' => ['message' => $cashout . ' points recieved', 'balance' => $user->balanceint]];
         }
     }
 

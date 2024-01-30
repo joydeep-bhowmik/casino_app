@@ -146,4 +146,17 @@
             rgba(0, 0, 0, 1) 39%
         );
     }
+
+    .plane {
+        margin: 20px;
+        animation: move 5000ms infinite ease-in-out;
+        offset-path: path("M20,20 C20,50 180,-10 180,20");
+        offset-rotate: auto;
+        animation-iteration-count: infinite;
+    }
+    @keyframes move {
+        100% {
+            offset-distance: 100%;
+        }
+    }
 }
