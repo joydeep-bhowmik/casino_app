@@ -22,10 +22,12 @@ class SuitcasesTable extends Datatable
                 HTML;
                 }),
             $this->field('name')
-                ->label('Name'),
+                ->label('Name')
+                ->searchable(),
 
             $this->field('price')
-                ->label('Price'),
+                ->label('Price')
+                ->sortable(),
 
             $this->field('...')
 

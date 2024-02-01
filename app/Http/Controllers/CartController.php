@@ -9,6 +9,30 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+
+    function sellitems(Request $request)
+    {
+
+        $user = $request->user()->with(['carts.product'])->first();
+
+        $carts = $user->carts;
+
+        foreach ($request->items as $item) {
+
+            $item = $carts->first(function ($cart) use ($item) {
+                return $cart->id == $item['id'];
+            });
+
+            if (
+                $item
+                && $item->product->price
+                && $user->deposit($item->product->price)
+            ) {
+                $item->delete();
+            }
+        }
+    }
+
     static function add($product_id, $user_id)
     {
         $user = User::find($user_id);
@@ -21,7 +45,8 @@ class CartController extends Controller
         }
     }
 
-    static    function remove($product_id, $user_id)
+
+    static function remove($product_id, $user_id)
     {
         $user = User::find($user_id);
         if ($user) {

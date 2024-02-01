@@ -8,12 +8,13 @@ import RssIcon from "@/Components/Icons/RssIcon";
 import UsersIcon from "@/Components/Icons/UsersIcon";
 import MobileMenu from "@/Components/MobileMenu";
 import PrimaryButton from "@/Components/PrimaryButton";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import { useStore } from "@/Store/main";
+import Carts from "./Carts";
 
-export default function Header() {
+export default function Header({ user }) {
     const balance = useStore((state) => state.balance);
     const updating_balance = useStore((state) => state.updating_balance);
     const updateBalance = useStore((state) => state.updateBalance);
@@ -24,14 +25,48 @@ export default function Header() {
         showNotificationBox: false,
     });
 
+    const avatar = user?.avatar;
+
+    const [tab, setTab] = useState(false);
+
+    const changeAuthTab = (tab) => {
+        if (!user) return router.visit(route("login"));
+        setTab(tab);
+    };
+
     useEffect(() => {
         if (balance == 0) {
             updateBalance();
         }
     }, []);
+
     return (
         <nav className="flex items-center p-5 lg:p-10 gap-5  text-[#959595] text-sm">
-            <ApplicationLogo />
+            <button
+                className={`lg:hidden ${state.showMobileMenu ? "ring-2" : ""}`}
+                onClick={() => {
+                    setTab("menu");
+                }}
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                    />
+                </svg>
+            </button>
+
+            <Link href={url("/")}>
+                <ApplicationLogo />
+            </Link>
 
             <div className="flex items-center gap-3 divide-x divide-slate-400">
                 <div className="hidden lg:flex items-center gap-3 font-medium">
@@ -71,9 +106,13 @@ export default function Header() {
                     <NotificationIcon className="-mt-2 h-8 w-8" active={true} />
                 </button>
 
-                <Link href="/">
+                <button
+                    onClick={() => {
+                        changeAuthTab("my cart");
+                    }}
+                >
                     <CartIcon className="h-5 w-5 " />
-                </Link>
+                </button>
 
                 <div className="hidden lg:flex gap-5 items-center justify-center font-bold bg-[#141414] rounded-md p-2">
                     <div className="flex gap-3 items-center">
@@ -98,15 +137,6 @@ export default function Header() {
                         )}
                     </div>
 
-                    {/* <Link href="/" className="text-black">
-                        <PrimaryButton
-                            className="py-2"
-                            onClick={() => addBalace(200)}
-                        >
-                            Deposit
-                        </PrimaryButton>
-                    </Link> */}
-
                     <PrimaryButton
                         className="py-2 text-black"
                         onClick={() => addBalace(200)}
@@ -121,30 +151,78 @@ export default function Header() {
 
                 <FrameIcon className="hidden lg:block h-6 w-6" />
 
-                <button
-                    htmlFor="menu-check"
-                    className={
-                        "block rounded-full overflow-hidden h-10 w-10 bg-slate-800" +
-                        " " +
-                        (state.showMobileMenu ? "ring-4" : "")
-                    }
-                    onClick={() =>
-                        setState({
-                            ...state,
-                            showMobileMenu: !state.showMobileMenu,
-                        })
-                    }
+                <Link
+                    href={route("profile.edit")}
+                    className="block rounded-full overflow-hidden h-10 w-10 bg-slate-800"
                 >
                     <img
-                        src={url("/assets/avatars/seccao.png")}
+                        src={
+                            avatar
+                                ? url("/storage/avatars/" + avatar)
+                                : url("/assets/avatars/seccao.png")
+                        }
                         alt=""
                         className="object-contain h-full"
                     />
-                </button>
+                </Link>
 
-                {/* mobile nav */}
+                {tab ? (
+                    <>
+                        <div
+                            onClick={() => {
+                                setTab(false);
+                            }}
+                            className="bg-black opacity-75 fixed top-0 left-0 right-0 bottom-0 z-50 w-full h-full"
+                        ></div>
 
-                <MobileMenu open={state.showMobileMenu} />
+                        <div className="side-menu h-full w-full  max-w-lg overflow-y-auto fixed  top-0 bottom-0 right-0 z-50 bg px-5 py-3  border-[#1B1B1B] border-2 rounded-md">
+                            <div className="flex items-center gap-5 py-3 border-b border-b-slate-900">
+                                <button
+                                    className="my-3"
+                                    onClick={() => {
+                                        setTab(false);
+                                    }}
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-6 h-6"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M6 18 18 6M6 6l12 12"
+                                        />
+                                    </svg>
+                                </button>
+                                <h2 className="font-semibold text-lg capitalize">
+                                    {tab}
+                                </h2>
+                            </div>
+                            {tab == "my cart" ? (
+                                <Carts carts={user.carts} />
+                            ) : (
+                                ""
+                            )}
+                            {tab == "menu" ? (
+                                <MobileMenu
+                                    open={true}
+                                    balance={balance}
+                                    updating_balance={updating_balance}
+                                    updateBalance={updateBalance}
+                                    addBalace={addBalace}
+                                />
+                            ) : (
+                                ""
+                            )}
+                        </div>
+                    </>
+                ) : (
+                    ""
+                )}
             </div>
         </nav>
     );

@@ -14,6 +14,6 @@ class RotetaController extends Controller
 
         $recomended_suitcase = Suitcase::where('id', '!=', $suitcase->id)->get();
 
-        return Inertia::render('Games/Roteta', compact('suitcase', 'recomended_suitcase'));
+        return Inertia::render('Games/Roteta/index', compact('suitcase', 'recomended_suitcase'));
     }
 }

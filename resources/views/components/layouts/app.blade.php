@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>{{ $title ?? 'Page Title' }}</title>
+    @stack('heads')
 </head>
 @vite(['resources/css/app.css', 'resources/js/bootstrap.js'])
 
@@ -45,6 +46,8 @@
 
     <x-alert />
 </body>
+@stack('styles')
+@stack('scripts')
 <script>
     document.addEventListener('livewire:init', () => {
         Livewire.directive('x-confirm', ({

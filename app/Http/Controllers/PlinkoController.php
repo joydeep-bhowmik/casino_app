@@ -9,6 +9,6 @@ class plinkoController extends Controller
 {
     function index(Request $request)
     {
-        return Inertia::render('Games/Plinko');
+        return Inertia::render('Games/Plinko/index');
     }
 }

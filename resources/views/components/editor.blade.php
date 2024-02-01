@@ -111,7 +111,8 @@
 
             </button>
         </div>
-        <div class="max-h-96 min-h-[144px] overflow-y-auto px-3 py-2" id="preview_{{ $id }}" x-show="preview">
+        <div class="max-h-96 min-h-[144px] overflow-y-auto px-3 py-2" id="preview_{{ $id }}"
+            style="line-break: anywhere;" x-show="preview">
         </div>
         <textarea id="editor_{{ $id }}"
             {{ $attributes->merge([

@@ -9,6 +9,6 @@ class CrashController extends Controller
 {
     function index(Request $request)
     {
-        return Inertia::render('Games/Crash');
+        return Inertia::render('Games/Crash/index');
     }
 }

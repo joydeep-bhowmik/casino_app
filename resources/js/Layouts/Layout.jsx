@@ -3,8 +3,11 @@ import Footer from "@/Components/Footer";
 import Header from "@/Components/Header";
 import { useState } from "react";
 import { useStore } from "./../Store/main";
+import { usePage } from "@inertiajs/react";
 
 export default function Layout({ children, ...props }) {
+    const user = usePage().props.auth.user;
+
     const [state, setState] = useState({
         activeTab: "cat",
     });
@@ -19,7 +22,7 @@ export default function Layout({ children, ...props }) {
 
     return (
         <>
-            <Header />
+            <Header user={user} />
 
             <div className="min-h-screen ">
                 <aside className="max-w-fit w-full h-full hidden flex-col max-h-[85vh] p-3 overflow-x-auto absolute  lg:flex">

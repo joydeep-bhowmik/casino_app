@@ -10,6 +10,6 @@ class MinerController extends Controller
     function index(Request $request)
     {
 
-        return Inertia::render('Games/Miner');
+        return Inertia::render('Games/Miner/index');
     }
 }

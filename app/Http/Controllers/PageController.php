@@ -11,6 +11,6 @@ class PageController extends Controller
     function index(Request $request)
     {
         $page = Page::where('slug', $request->slug)->first();
-        return  Inertia::render('Page', compact('page'));
+        return  Inertia::render('Page/index', compact('page'));
     }
 }

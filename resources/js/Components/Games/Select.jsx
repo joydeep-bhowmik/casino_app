@@ -1,11 +1,11 @@
 import { forwardRef } from "react";
 
 export default forwardRef(function Select(
-    { children, className, label, ...props },
+    { children, className, label, wrapperClass, ...props },
     ref
 ) {
     return (
-        <div className="w-full ">
+        <div className={`w-full ${wrapperClass}`}>
             <span className="uppercase tracking-wide font-bold text-xs text-slate-600">
                 {label ? label : ""}
             </span>

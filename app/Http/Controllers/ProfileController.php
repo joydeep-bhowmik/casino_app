@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Country;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,9 +19,10 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        return Inertia::render('Profile/Edit', [
+        return Inertia::render('Profile/Edit/index', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'countries' => Country::all()
         ]);
     }
 
@@ -59,5 +61,39 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    function updateAvatar(Request $request)
+    {
+        $request->validate(['avatars' => 'dimensions:min_width=184,min_height=184']);
+
+        $file = $request->file('avatar');
+
+        $user = $request->user();
+
+
+
+        $filename = $user->id . time() . $file->getClientOriginalName();
+
+        $path = $file->storeAs(
+            'avatars',
+            $filename,
+            'public'
+        );
+
+        if ($path) {
+
+            if ($user->avatar) {
+
+                $existing_file = public_path('/storage/avatars/' . $user->avatar);
+
+                if (file_exists($existing_file)) {
+                    unlink($existing_file);
+                }
+            }
+
+            $user->avatar = $filename;
+            $user->save();
+        }
     }
 }

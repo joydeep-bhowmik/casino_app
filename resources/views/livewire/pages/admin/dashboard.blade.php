@@ -35,5 +35,7 @@ with(function () {
                 <h2 class="text-4xl font-bold">{{ $value }}</h2>
             </x-section>
         @endforeach
+
     </div>
+
 </div>

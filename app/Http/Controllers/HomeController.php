@@ -12,7 +12,7 @@ class HomeController extends Controller
 
     function index()
     {
-        return Inertia::render('Home', [
+        return Inertia::render('Home/index', [
             'games' => Game::all()
         ]);
     }

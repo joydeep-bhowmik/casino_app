@@ -4,11 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Cart;
+use App\Models\ShippingAddress;
 use Laravel\Sanctum\HasApiTokens;
 use Bavix\Wallet\Traits\HasWallet;
 use Bavix\Wallet\Interfaces\Wallet;
 use Illuminate\Notifications\Notifiable;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -46,4 +47,20 @@ class User extends Authenticatable implements Wallet
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    /**
+     * The function "carts" returns a collection of "Cart" objects.
+     * 
+     * @return a relationship between the current model and the Cart model.
+     */
+    function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    function address()
+    {
+        return $this->hasOne(ShippingAddress::class);
+    }
 }

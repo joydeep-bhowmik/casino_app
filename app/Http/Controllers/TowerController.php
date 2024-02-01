@@ -9,6 +9,6 @@ class TowerController extends Controller
 {
     function index(Request $request)
     {
-        return Inertia::render('Games/Tower');
+        return Inertia::render('Games/Tower/index');
     }
 }
