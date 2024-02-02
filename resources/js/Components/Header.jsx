@@ -41,7 +41,7 @@ export default function Header({ user }) {
     }, []);
 
     return (
-        <nav className="flex items-center p-5 lg:p-10 gap-5  text-[#959595] text-sm">
+        <nav className="max-content-width  flex items-center p-5 lg:p-10  text-[#959595] text-sm">
             <button
                 className={`lg:hidden ${state.showMobileMenu ? "ring-2" : ""}`}
                 onClick={() => {
@@ -65,10 +65,10 @@ export default function Header({ user }) {
             </button>
 
             <Link href={url("/")}>
-                <ApplicationLogo />
+                <ApplicationLogo className="h-6 lg:h-8   " />
             </Link>
 
-            <div className="flex items-center gap-3 divide-x divide-slate-400">
+            <div className="ml-5 flex items-center gap-3 divide-x divide-slate-400">
                 <div className="hidden lg:flex items-center gap-3 font-medium">
                     <RssIcon className="h-3 w-3" />
                     <span className="text-[#6FCAE8] ">2.207</span>
@@ -101,7 +101,7 @@ export default function Header({ user }) {
                 </div>
             </div>
 
-            <div className="flex items-center gap-5 ml-auto">
+            <div className="flex items-center gap-2 lg:gap-5 ml-auto">
                 <button>
                     <NotificationIcon className="-mt-2 h-8 w-8" active={true} />
                 </button>
@@ -153,7 +153,7 @@ export default function Header({ user }) {
 
                 <Link
                     href={route("profile.edit")}
-                    className="block rounded-full overflow-hidden h-10 w-10 bg-slate-800"
+                    className="block rounded-full ml-3 lg:ml-0 overflow-hidden h-8 w-8 lg:h-10 lg:w-10 bg-slate-800"
                 >
                     <img
                         src={

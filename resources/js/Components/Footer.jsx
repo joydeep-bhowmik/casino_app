@@ -6,8 +6,8 @@ import ApplicationLogo from "./ApplicationLogo";
 export default function Footer() {
     const { pages, socials } = usePage().props.data;
     return (
-        <footer className="bg mt-10">
-            <div className="border-b border-[#292929] flex flex-col gap-8 md:grid md:grid-cols-[auto_auto_auto] p-8">
+        <footer className="bg mt-10  ">
+            <div className="max-content-width  border-b border-[#292929] flex flex-col gap-8 md:grid md:grid-cols-[auto_auto_auto] p-8">
                 <div className="flex  gap-5">
                     {socials.map((s) => (
                         <a href={s.link} key={s.id} target="_blank">
@@ -17,13 +17,17 @@ export default function Footer() {
                 </div>
                 <div className="flex lg:flex-row flex-col gap-8  break-inside-avoid-column">
                     {pages.map((p) => (
-                        <Link href={p.slug} key={p.slug} className="uppercase">
+                        <Link
+                            href={`/pages/${p.slug}`}
+                            key={p.slug}
+                            className="uppercase"
+                        >
                             {p.title}
                         </Link>
                     ))}
                 </div>
             </div>
-            <div className="flex md:gap-28 md:flex-row flex-col gap-8 items-center p-8">
+            <div className=" max-content-width flex md:gap-28 md:flex-row flex-col gap-8 items-center p-8">
                 <ApplicationLogo />
 
                 <p>

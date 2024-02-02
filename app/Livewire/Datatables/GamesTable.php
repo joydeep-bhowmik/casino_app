@@ -27,7 +27,8 @@ class GamesTable extends Datatable
                 }),
 
             $this->field('name')
-                ->label('Name'),
+                ->label('Name')
+                ->searchable(),
 
             $this->field('description')
                 ->label('Description')

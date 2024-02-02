@@ -17,6 +17,8 @@
     @viteReactRefresh
     @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
     @inertiaHead
+    <!--  styles -->
+    <link href="{{ url('/assets/css/github-markdown-dark.css') }}" rel="stylesheet">
 </head>
 
 <body class="bg-black font-sans text-white antialiased">

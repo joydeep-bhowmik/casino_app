@@ -7,6 +7,8 @@
 
     <title>{{ $title ?? 'Page Title' }}</title>
     @stack('heads')
+
+    <link href="{{ url('/assets/css/github-markdown-dark.css') }}" rel="stylesheet">
 </head>
 @vite(['resources/css/app.css', 'resources/js/bootstrap.js'])
 

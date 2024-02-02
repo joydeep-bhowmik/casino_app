@@ -12,7 +12,8 @@ class PagesTable extends Datatable
     {
         return [
             $this->field('title')
-                ->label('Title'),
+                ->label('Title')
+                ->searchable(),
 
             $this->field('slug')
                 ->label('Slug'),

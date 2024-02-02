@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KenoController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\RollController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CrashController;
 use App\Http\Controllers\MinerController;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\TowerController;
 use App\Http\Controllers\PlinkoController;
 use App\Http\Controllers\RotetaController;
@@ -65,6 +66,8 @@ Route::prefix('games')->group(function () {
     Route::get('tower', [TowerController::class, "index"])->name('games.tower');
 
     Route::get('plinko', [PlinkoController::class, "index"])->name('games.plinko');
+
+    Route::get('roll', [RollController::class, "index"])->name('games.roll');
 });
 
 Route::any('/user-balance', function (Request $request) {

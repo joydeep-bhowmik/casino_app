@@ -70,16 +70,16 @@ export default function RotetaSpin({ suitcase, recomended_suitcase }) {
         }
     };
 
-    function send_message(props) {
+    const send_message = (props) => {
         const msg = JSON.stringify(props);
         conn.send(msg);
-    }
+    };
 
-    function sell(props) {
+    const sell = (props) => {
         send_message({ type: "sell", id: props.id });
-    }
+    };
 
-    function spin(time = 5000, callback = function () {}) {
+    const spin = (time = 5000, callback = function () {}) => {
         setState((prev) => ({
             ...prev,
             spin: true,
@@ -95,7 +95,7 @@ export default function RotetaSpin({ suitcase, recomended_suitcase }) {
         setTimeout(() => {
             callback();
         }, time + 100);
-    }
+    };
 
     useEffect(() => {
         setState((prev) => ({

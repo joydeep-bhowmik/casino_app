@@ -10,6 +10,7 @@ class ImagePolicy
 {
     public function delete(?User $user, Image $image): bool
     {
-        return  $user && ($user->role == 1);
+        return true;
+        //  $user && ($user->role == 1);
     }
 }

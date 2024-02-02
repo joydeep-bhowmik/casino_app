@@ -10,7 +10,8 @@ export default function GameLayout({ title, children }) {
                         href={url("/")}
                         className="capitalize text-white flex items-center gap-2"
                     >
-                        <ArrowLeft /> back to home
+                        <ArrowLeft />{" "}
+                        <span className="hidden lg:block">back to home</span>
                     </Link>
                 </div>
 

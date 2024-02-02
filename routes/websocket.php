@@ -2,6 +2,7 @@
 
 use App\Ws\Controllers\ChatSocket;
 use App\Ws\Controllers\KenoSocket;
+use App\Ws\Controllers\RollSocket;
 use App\Ws\Controllers\CrashSocket;
 use App\Ws\Controllers\MinerSocket;
 use App\Ws\Controllers\TowerSocket;
@@ -19,3 +20,5 @@ WebSocketsRouter::webSocket('/keno', KenoSocket::class);
 WebSocketsRouter::webSocket('/crash', CrashSocket::class);
 
 WebSocketsRouter::webSocket('/tower', TowerSocket::class);
+
+WebSocketsRouter::webSocket('/roll', RollSocket::class);

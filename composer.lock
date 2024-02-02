@@ -4,92 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc71866c24a1b9dbbc8edc31975b925d",
+    "content-hash": "686ed7c6c88d3f178e609a095d5e134d",
     "packages": [
-        {
-            "name": "bavix/laravel-wallet",
-            "version": "10.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bavix/laravel-wallet.git",
-                "reference": "d6642aecf7d3c9eaba8a29ec4281e2a76e891c3e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bavix/laravel-wallet/zipball/d6642aecf7d3c9eaba8a29ec4281e2a76e891c3e",
-                "reference": "d6642aecf7d3c9eaba8a29ec4281e2a76e891c3e",
-                "shasum": ""
-            },
-            "require": {
-                "brick/math": "~0.10",
-                "doctrine/dbal": "^3.5",
-                "ext-json": "*",
-                "ext-pdo": "*",
-                "illuminate/contracts": "^10.0",
-                "illuminate/database": "^10.0",
-                "php": "^8.1",
-                "ramsey/uuid": "^4.0"
-            },
-            "require-dev": {
-                "brianium/paratest": "^7.2",
-                "cknow/laravel-money": "^7.1",
-                "ergebnis/phpstan-rules": "^1.0",
-                "infection/infection": "~0.27",
-                "laravel/cashier": "^15.0",
-                "nunomaduro/collision": "^7.7",
-                "nunomaduro/larastan": "^2.6",
-                "orchestra/testbench": "^8.5",
-                "phpstan/phpstan": "^1.10",
-                "phpunit/phpunit": "^10.2",
-                "rector/rector": "^0.19",
-                "symplify/easy-coding-standard": "^12.0"
-            },
-            "suggest": {
-                "bavix/laravel-wallet-swap": "Addition to the laravel-wallet library for quick setting of exchange rates",
-                "bavix/laravel-wallet-warmup": "Addition to the laravel-wallet library for refresh balance wallets"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Bavix\\Wallet\\WalletServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Bavix\\Wallet\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Babichev Maxim",
-                    "email": "info@babichev.net"
-                }
-            ],
-            "description": "Easy work with virtual wallet.",
-            "homepage": "https://bavix.github.io/laravel-wallet/",
-            "keywords": [
-                "bavix",
-                "credits",
-                "currency",
-                "laravel",
-                "laravel-package",
-                "laravel-wallet",
-                "payments",
-                "virtual",
-                "wallet"
-            ],
-            "support": {
-                "issues": "https://github.com/bavix/laravel-wallet/issues",
-                "source": "https://github.com/bavix/laravel-wallet/tree/10.1.1"
-            },
-            "time": "2024-01-19T15:02:00+00:00"
-        },
         {
             "name": "beyondcode/laravel-websockets",
             "version": "1.14.1",
@@ -5219,6 +5135,136 @@
                 "source": "https://github.com/ringcentral/psr7/tree/master"
             },
             "time": "2018-05-29T20:21:04+00:00"
+        },
+        {
+            "name": "spatie/laravel-package-tools",
+            "version": "1.16.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-package-tools.git",
+                "reference": "e62eeb1fe8a8a0b2e83227a6c279c8c59f7d3a15"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/e62eeb1fe8a8a0b2e83227a6c279c8c59f7d3a15",
+                "reference": "e62eeb1fe8a8a0b2e83227a6c279c8c59f7d3a15",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^9.28|^10.0|^11.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.5",
+                "orchestra/testbench": "^7.7|^8.0",
+                "pestphp/pest": "^1.22",
+                "phpunit/phpunit": "^9.5.24",
+                "spatie/pest-plugin-test-time": "^1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\LaravelPackageTools\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Tools for creating Laravel packages",
+            "homepage": "https://github.com/spatie/laravel-package-tools",
+            "keywords": [
+                "laravel-package-tools",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-package-tools/issues",
+                "source": "https://github.com/spatie/laravel-package-tools/tree/1.16.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-01-11T08:43:00+00:00"
+        },
+        {
+            "name": "stephenjude/laravel-wallet",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stephenjude/laravel-wallet.git",
+                "reference": "00fd03b9bb5005cada185411bdd2ede720734bc3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stephenjude/laravel-wallet/zipball/00fd03b9bb5005cada185411bdd2ede720734bc3",
+                "reference": "00fd03b9bb5005cada185411bdd2ede720734bc3",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^8.0|^9.0|^10.0",
+                "php": "^8.0|^8.1",
+                "spatie/laravel-package-tools": "^1.9.2"
+            },
+            "require-dev": {
+                "nunomaduro/collision": "^5.10|^6.1",
+                "orchestra/testbench": "^6.0",
+                "pestphp/pest": "^1.21",
+                "phpunit/phpunit": "^9.5.10"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Stephenjude\\Wallet\\WalletServiceProvider"
+                    ],
+                    "aliases": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Stephenjude\\Wallet\\": "src",
+                    "Stephenjude\\Wallet\\Tests\\Database\\Factories\\": "tests/database/factories"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "stephenjude",
+                    "email": "stephenjudesuccess@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple wallet implementation for Laravel",
+            "homepage": "https://github.com/stephenjude/laravel-wallet",
+            "keywords": [
+                "laravel",
+                "stephenjude",
+                "wallet"
+            ],
+            "support": {
+                "issues": "https://github.com/stephenjude/laravel-wallet/issues",
+                "source": "https://github.com/stephenjude/laravel-wallet/tree/1.0.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/stephenjude",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-10-02T11:54:14+00:00"
         },
         {
             "name": "symfony/console",

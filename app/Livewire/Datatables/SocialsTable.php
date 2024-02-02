@@ -12,7 +12,8 @@ class SocialsTable extends Datatable
     {
         return [
             $this->field('name')
-                ->label('Name'),
+                ->label('Name')
+                ->searchable(),
 
             $this->field('image_url')
                 ->label('image')
