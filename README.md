@@ -58,7 +58,9 @@ Run the following command to serve the Node.js server:
 ```bash
 npm run dev
 ```
+## Step 7: Start Websocket Server
 
+<<<<<<< HEAD
 ## Step 7: Start Websocket Server
 
 Run the following command to start webscoket server
@@ -67,6 +69,14 @@ Run the following command to start webscoket server
 php artisan websockets:serve
 ```
 
+=======
+Run the following command to start webscoket server
+
+```bash
+php artisan websockets:serve
+```
+
+>>>>>>> 010caba78a3bee2f8ec64b30776703646117f75e
 ## Step 8: Access the App
 
 Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) in your web browser to access the casino website.
