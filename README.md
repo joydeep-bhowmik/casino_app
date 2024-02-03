@@ -1,6 +1,6 @@
 # Casino App Setup Guide
 
-To successfully run the casino app, follow these organized steps in a Markdown format:
+To successfully run the casino app, follow these organized steps :
 
 ## Step 1: Start a Web Server
 
