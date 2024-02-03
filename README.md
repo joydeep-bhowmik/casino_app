@@ -31,6 +31,18 @@ Run the following command to create the necessary tables in the database:
 php artisan migrate
 ```
 
+# Step 5: Clear Cache
+
+Run the following commands to clear cache:
+
+```bash
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+php artisan config:clear
+
+```
+
 ## Step 5: Serve the App
 
 Run the following command to start serving the Laravel app:
@@ -47,8 +59,14 @@ Run the following command to serve the Node.js server:
 npm run dev
 ```
 
-## Step 7: Access the App
+## Step 7: Start Websocket Server
 
-Visit [http://127.0.0.1:8000/games/plinko](http://127.0.0.1:8000/games/plinko) in your web browser to access the Plinko game within the casino app.
+Run the following command to start webscoket server
 
-Now you should have the casino app up and running, with the Plinko game accessible through the provided URL.
+```bash
+php artisan websockets:serve
+```
+
+## Step 8: Access the App
+
+Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) in your web browser to access the casino website.
