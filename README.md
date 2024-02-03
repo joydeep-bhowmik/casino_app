@@ -31,7 +31,7 @@ Run the following command to create the necessary tables in the database:
 php artisan migrate
 ```
 
-# Step 5: Clear Cache
+## Step 5: Clear Cache
 
 Run the following commands to clear cache:
 
