@@ -43,7 +43,7 @@ php artisan config:clear
 
 ```
 
-## Step 5: Serve the App
+## Step 6: Serve the App
 
 Run the following command to start serving the Laravel app:
 
@@ -51,17 +51,15 @@ Run the following command to start serving the Laravel app:
 php artisan serve
 ```
 
-## Step 6: Start Node.js Server
+## Step 7: Start Node.js Server
 
 Run the following command to serve the Node.js server:
 
 ```bash
 npm run dev
 ```
-## Step 7: Start Websocket Server
 
-<<<<<<< HEAD
-## Step 7: Start Websocket Server
+## Step 8: Start Websocket Server
 
 Run the following command to start webscoket server
 
@@ -69,14 +67,6 @@ Run the following command to start webscoket server
 php artisan websockets:serve
 ```
 
-=======
-Run the following command to start webscoket server
-
-```bash
-php artisan websockets:serve
-```
-
->>>>>>> 010caba78a3bee2f8ec64b30776703646117f75e
-## Step 8: Access the App
+## Step 9: Access the App
 
 Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) in your web browser to access the casino website.
