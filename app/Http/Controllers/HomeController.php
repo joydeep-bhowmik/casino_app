@@ -19,4 +19,9 @@ class HomeController extends Controller
     function get_banner()
     {
     }
+
+    function games()
+    {
+        return response()->json(Game::all());
+    }
 }

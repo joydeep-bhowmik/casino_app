@@ -4,6 +4,7 @@ use App\Ws\Controllers\ChatSocket;
 use App\Ws\Controllers\KenoSocket;
 use App\Ws\Controllers\RollSocket;
 use App\Ws\Controllers\CrashSocket;
+use App\Ws\Controllers\DealsSocket;
 use App\Ws\Controllers\MinerSocket;
 use App\Ws\Controllers\TowerSocket;
 use App\Ws\Controllers\RotetaSocket;
@@ -22,3 +23,5 @@ WebSocketsRouter::webSocket('/crash', CrashSocket::class);
 WebSocketsRouter::webSocket('/tower', TowerSocket::class);
 
 WebSocketsRouter::webSocket('/roll', RollSocket::class);
+
+WebSocketsRouter::webSocket('/deals', DealsSocket::class);

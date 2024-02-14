@@ -4,17 +4,34 @@ import { useState, forwardRef, useMemo } from "react";
 import Input from "@/Components/Games/Input";
 import MultiplierButton from "@/Components/Games/MultiplierButton";
 import { useStore } from "@/Store/main";
-import { useAlert } from "react-alert";
+import { useToast } from "@/Components/ui/use-toast";
 import Section from "@/Components/Section";
 import { useEffect, useRef } from "react";
 import { successSound, errorSound, gameOverSound } from "@/Libs/sounds";
+import { socket, url } from "@/Libs/urls.js";
 
 export default function index() {
-    const alert = useAlert();
-    const updateBalance = useStore((state) => state.updateBalance);
-    const balance = useStore((state) => state.balance);
-    const roundId = useStore((state) => state.roundId);
-    const updateRoundId = useStore((state) => state.updateRoundId);
+    const { updateBalance, balance, roundId, updateRoundId, settings } =
+        useStore((state) => state);
+    const { toast } = useToast();
+
+    const showError = (description) => {
+        toast({
+            title: "Error",
+            description: description,
+            variant: "destructive",
+        });
+        settings.sound && errorSound();
+    };
+
+    const showInfo = (description) => {
+        toast({
+            title: "Info",
+            description: description,
+        });
+        settings.sound && errorSound();
+    };
+
     const connRef = useRef(null);
 
     const [state, setState] = useState({
@@ -55,12 +72,12 @@ export default function index() {
     const placeBet = (item) => {
         if (!item_keys.includes(item)) {
             errorSound();
-            return alert.error("Invalid item");
+            return showError("Invalid item");
         }
 
         if (state.bet > balance) {
             errorSound();
-            return alert.error("Insufficient funds");
+            return showError("Insufficient funds");
         }
 
         send_message({ type: "start", bet: state.bet, item: item });
@@ -86,12 +103,12 @@ export default function index() {
             if (res.error) {
                 console.log(res.error);
                 errorSound();
-                return alert.error(res.error);
+                return showError(res.error);
             }
 
             if (res.info) {
                 errorSound();
-                return alert.info(res.info);
+                return showInfo(res.info);
             }
 
             if (res.success) {
@@ -105,9 +122,7 @@ export default function index() {
                     spinning: true,
                 }));
 
-                successSound();
-
-                alert.success(res.success.message);
+                settings.sound && successSound();
 
                 setTimeout(() => {
                     setState((pre) => ({
@@ -118,11 +133,14 @@ export default function index() {
                     }));
 
                     if (res.success.status == "won") {
-                        alert.success(res.success.payout + " points won");
-                        successSound();
+                        toast({
+                            title: "Win",
+                            description: res.success.payout + " points won",
+                        });
+                        settings.sound && successSound();
                     } else if (res.success.status == "lost") {
-                        alert.info("Game over");
-                        gameOverSound();
+                        showInfo("Game over");
+                        settings.sound && gameOverSound();
                     }
                     updateBalance(res.success.balance);
                 }, 2000);
@@ -162,7 +180,7 @@ export default function index() {
                 onChange={(e) => {
                     let value = e.target.value;
                     if (value > balance) {
-                        alert.info("Insufficient balance");
+                        showInfo("Insufficient balance");
                         return;
                     }
                     setState((pre) => ({

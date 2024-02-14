@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { url } from "@/Libs/urls.js";
 
 export default function Plane2({ crash = false }) {
     const [planePositionX, setPlanePositionX] = useState(0);

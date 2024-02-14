@@ -1,14 +1,17 @@
 import Layout from "@/Layouts/Layout";
 import { useState } from "react";
-import cn from "@/Libs/cn";
-import Input from "@/Components/Input";
-import Section from "@/Components/Section";
-import PrimaryButton from "@/Components/PrimaryButton";
+
 import UpdateProfileInformation from "../Partials/UpdateProfileInformationForm";
 import UpdateShippingAddress from "../Partials/UpdateShippingAddress";
 import UpdateAvatar from "../Partials/UpdateAvatar";
-
-export default function index({ auth, mustVerifyEmail, status, countries }) {
+import { url } from "@/Libs/urls";
+export default function index({
+    auth,
+    mustVerifyEmail,
+    status,
+    countries,
+    address,
+}) {
     const [tab, setTab] = useState("profile");
     const tabs = [
         {
@@ -45,7 +48,10 @@ export default function index({ auth, mustVerifyEmail, status, countries }) {
                     status={status}
                 />
 
-                <UpdateShippingAddress countries={countries} />
+                <UpdateShippingAddress
+                    countries={countries}
+                    address={address}
+                />
 
                 <UpdateAvatar user={auth.user} />
             </div>

@@ -1,7 +1,7 @@
 import Section from "@/Components/Section";
 import { useForm } from "@inertiajs/react";
 import { useRef } from "react";
-
+import { url } from "@/Libs/urls";
 export default function UpdateAvatar({ user }) {
     const { data, setData, post, progress } = useForm({ avatar: null });
 
@@ -48,7 +48,7 @@ export default function UpdateAvatar({ user }) {
                 </label>
 
                 <button
-                    className={`change-btn px-2 rounded-md py-1   uppercase text-xs h-8 `}
+                    className={`change-btn p-4 rounded-md min-w-32 h-9 uppercase text-xs  `}
                 >
                     Change
                 </button>

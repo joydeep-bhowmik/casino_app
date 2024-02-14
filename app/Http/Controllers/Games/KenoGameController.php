@@ -101,13 +101,15 @@ class KenoGameController extends Controller
             case 'low':
                 $this->number_of_gems = rand(1, 4);
                 $this->number_of_green_boxes = 30;
+                break;
             case 'medium':
                 $this->number_of_gems =  rand(4, 8);
                 $this->number_of_green_boxes = 20;
-
+                break;
             case 'high':
                 $this->number_of_gems = rand(8, 12);
                 $this->number_of_green_boxes = 12;
+                break;
         }
 
         $this->multiplier = (1 / $this->number_of_green_boxes) * 100;
@@ -153,9 +155,9 @@ class KenoGameController extends Controller
 
         $round->save();
 
-        if (count($data->collected_numbers) >= 10) {
+        if (count($data->collected_numbers) >= 15) {
 
-            $multiplier = count($data->collected_gems) * $round->multiplier;
+            $multiplier = count($data->collected_green_boxes) * ($round->multiplier / 2) + count($data->collected_gems) * $round->multiplier;
 
             $payout = (int)($data->bet + ($data->bet * $multiplier));
 
@@ -169,7 +171,7 @@ class KenoGameController extends Controller
 
             return ['finished' => [
                 'message' => 'Game over',
-                'payout' => $round->payout . ' points collected',
+                'payout' => $round->payout,
                 'balance' => $user->balanceInt,
             ]];
         }

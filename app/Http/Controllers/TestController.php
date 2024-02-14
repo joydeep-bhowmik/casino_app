@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Round;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Games\MinerGameController;
+use App\Http\Controllers\ItemController;
+
 
 class TestController extends Controller
 {
-    function create(Request $request)
+    public function create(Request $request)
     {
-        $user = User::first();
 
-        //getBalanceIntAttribute()
-        return response()->json($user->balanceInt);
+        return ItemController::search(($request));
     }
 
     function check(Request $request)
@@ -28,5 +25,10 @@ class TestController extends Controller
 
     function start(Request $request)
     {
+    }
+
+    function index()
+    {
+        return Inertia('Test');
     }
 }

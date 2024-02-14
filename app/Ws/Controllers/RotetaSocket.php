@@ -2,12 +2,13 @@
 
 namespace App\Ws\Controllers;
 
-use App\Models\Cart;
+use App\Models\item;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\Suitcase;
 use Ratchet\ConnectionInterface;
 use App\Ws\Controllers\WsController;
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\itemController;
 
 class RotetaSocket  extends WsController
 {
@@ -19,14 +20,22 @@ class RotetaSocket  extends WsController
 
         $data = json_decode($msg);
 
+        $user = User::find($from->user?->id);
+
         if (!isset($data->type)) return;
+
 
         if ($data->type == 'spin' && isset($data->slug)) {
 
+            $randomProduct = $this->select_random_product($data->slug, $user);
 
+            if ($randomProduct) {
+
+                $user->deposit($randomProduct->price);
+            }
             $response = [
                 'type' => 'spin',
-                'uid' => $this->select_random_product($data->slug, $from->user)
+                'uid' => $randomProduct?->id,
             ];
         }
 
@@ -34,7 +43,8 @@ class RotetaSocket  extends WsController
 
             $response = [
                 'type' => 'sell',
-                'sold' => $this->sell_item($data->id, $from->user)
+                'sold' => $this->sell_item($data->id, $user),
+                'balance' => $user->balanceInt
             ];
         }
         $from->send(json_encode($response));
@@ -43,14 +53,17 @@ class RotetaSocket  extends WsController
     function sell_item($id, $user)
     {
 
-        $cart = Cart::where('product_id', $id)->where('user_id', $user->id)->first();
+        $item = Item::where('product_id', $id)->where('user_id', $user->id)->first();
 
-        if (!$cart) return;
+        if (!$item) return;
 
-        $product = Product::find($cart->product_id);
+        $product = Product::find($item->product_id);
+        $item = Item::where('product_id', $product->id)->where('user_id', $user->id)->first();
 
-        if ($product  && CartController::remove($product->id, $user->id)) {
-            return $user->withdraw($product->price);
+
+        if ($product &&   $item  &&   $item->delete()) {
+
+            return $user->deposit($product->price);
         }
     }
 
@@ -75,12 +88,13 @@ class RotetaSocket  extends WsController
 
                 if ($randomProduct) {
 
-                    CartController::add($randomProduct->id, $user->id);
-
-                    $user->deposit($randomProduct->price);
+                    $item = new Item();
+                    $item->product_id = $randomProduct->id;
+                    $item->user_id = $user->id;
+                    $item->save();;
                 }
 
-                return  $randomProduct->id;
+                return  $randomProduct;
             }
         }
     }

@@ -1,20 +1,29 @@
-import Block from "@/Components/Games/Tower/Block";
-import Red from "@/Components/Games/Tower/Red";
-import Green from "@/Components/Games/Tower/Green";
+import Block from "./Block";
+import Red from "./Red";
+import Green from "./Green";
 import GameLayout from "@/Layouts/GameLayout";
-import { useAlert } from "react-alert";
 import { useStore } from "@/Store/main";
 import Input from "@/Components/Games/Input";
 import MultiplierButton from "@/Components/Games/MultiplierButton";
 import { useEffect, useState } from "react";
 import PrimaryButton from "@/Components/PrimaryButton";
+import { socket, url } from "@/Libs/urls.js";
+import { useRef } from "react";
+import { useToast } from "@/Components/ui/use-toast";
+import {
+    clickSound,
+    gameOverSound,
+    successSound,
+    errorSound,
+} from "@/Libs/sounds";
 
 export default function Tower() {
-    const alert = useAlert();
-    const updateBalance = useStore((state) => state.updateBalance);
     const balance = useStore((state) => state.balance);
     const roundId = useStore((state) => state.roundId);
     const updateRoundId = useStore((state) => state.updateRoundId);
+    const settings = useStore((state) => state.settings);
+    const connRef = useRef(null);
+    const { toast } = useToast();
 
     const initialTiles = Array.from({ length: 27 }, (_, index) => ({
         number: 27 - index,
@@ -35,6 +44,23 @@ export default function Tower() {
             ...pre,
             tiles: initialTiles,
         }));
+    };
+
+    const showError = (description) => {
+        toast({
+            title: "Error",
+            description: description,
+            variant: "destructive",
+        });
+        settings.sound && errorSound();
+    };
+
+    const showInfo = (description) => {
+        toast({
+            title: "Info",
+            description: description,
+        });
+        settings.sound && errorSound();
     };
 
     const change_block = ({ number, type }) => {
@@ -79,29 +105,26 @@ export default function Tower() {
         resetBlocks();
 
         if (state.bet > balance) {
-            return alert.error("Insufficient funds");
+            return showError("Insufficient funds");
         }
         send_message({ type: "start", bet: state.bet });
     };
 
-    const conn = new WebSocket(socket("/tower?token=" + get_user_token()));
-
-    conn.onmessage = (res) => {
+    const handleMessage = (res) => {
         res = res.data;
         res = JSON.parse(res);
-        console.log("recieved : ", res);
 
         if (res.error) {
-            return alert.error(res.error);
+            return showError(res.error);
         }
 
         if (res.info) {
-            return alert.info(res.info);
+            return showInfo(res.info);
         }
 
         if (res.success) {
             updateRoundId(res.success.round_id);
-
+            settings.sound && successSound();
             setState((pre) => ({
                 ...pre,
                 betDisabled: true,
@@ -109,7 +132,7 @@ export default function Tower() {
                 gridLocked: false,
             }));
 
-            return alert.success(res.success.message);
+            return;
         }
 
         if (res.block) {
@@ -122,21 +145,25 @@ export default function Tower() {
                     disabled: false,
                     gridLocked: false,
                 }));
-                return alert.info("Game over");
+                settings.sound && gameOverSound();
+                return showInfo("Game over");
             }
         }
 
         if (res.finished) {
-            return alert.success(res.finished);
+            settings.sound && gameOverSound();
+            return showInfo(res.finished);
         }
     };
 
     const send_message = (json) => {
-        console.log("sending : ", json);
-        conn.send(JSON.stringify(json));
+        settings.sound && clickSound();
+        connRef.current.send(JSON.stringify(json));
     };
 
     useEffect(() => {
+        const conn = new WebSocket(socket("/tower?token=" + get_user_token()));
+        conn.onmessage = handleMessage;
         conn.onopen = function (e) {
             setState((pre) => ({
                 ...pre,
@@ -152,6 +179,11 @@ export default function Tower() {
                 betDisabled: true,
             }));
         };
+        connRef.current = conn;
+
+        return () => {
+            connRef.current.close();
+        };
     }, []);
 
     return (
@@ -165,12 +197,12 @@ export default function Tower() {
                     backgroundSize: "cover",
                 }}
             >
-                <div className="bg p-10 border-[20px] rounded border-[#1A1A1A]">
+                <div className="bg p-1 lg:p-10 border-[20px] rounded border-[#1A1A1A]">
                     <div className="w-full grid grid-cols-3 gap-3 max-w-lg">
                         {state.tiles.map((i) => {
                             const type = i.type;
                             var block = "";
-                            const className = "";
+                            const className = "w-full border";
                             switch (type) {
                                 case "red":
                                     block = (
@@ -213,18 +245,18 @@ export default function Tower() {
                     </div>
                 </div>
             </div>
-            <div className="flex items-center gap-2 mt-5">
+            <div className="flex items-center flex-col lg:flex-row gap-2 mt-5">
                 <Input
                     label="bet amount"
                     prefix="$"
                     allowClear={false}
-                    className="flex gap-1  items-center "
+                    className="flex gap-1 flex-col lg:flex-row w-full"
                     inputClassName=""
                     value={state.bet}
                     onChange={(e) => {
                         let value = e.target.value;
                         if (value > balance) {
-                            alert.info("Insufficient balance");
+                            showInfo("Insufficient balance");
                             return;
                         }
                         setState((pre) => ({
@@ -233,48 +265,53 @@ export default function Tower() {
                         }));
                     }}
                 >
-                    {[
-                        { mul: 1, label: "+1", mode: "plus" },
-                        { mul: 5, label: "+5", mode: "plus" },
-                        { mul: 10, label: "+10", mode: "plus" },
-                        { mul: 25, label: "+25", mode: "plus" },
-                        { mul: 0.5, label: "1/2" },
-                        { mul: 2, label: "2x" },
-                    ].map((o) => (
+                    <div className="flex gap-1 flex-wrap items-center">
+                        {[
+                            { mul: 1, label: "+1", mode: "plus" },
+                            { mul: 5, label: "+5", mode: "plus" },
+                            { mul: 10, label: "+10", mode: "plus" },
+                            { mul: 25, label: "+25", mode: "plus" },
+                            { mul: 0.5, label: "1/2" },
+                            { mul: 2, label: "2x" },
+                        ].map((o) => (
+                            <MultiplierButton
+                                key={o.label}
+                                onClick={(e) => {
+                                    state.bet = parseFloat(state.bet, 10);
+                                    o.mul = parseFloat(o.mul, 10);
+                                    let bet = state.bet * o.mul;
+                                    if (o.mode == "plus") {
+                                        bet = state.bet + o.mul;
+                                    }
+                                    if (bet > balance) {
+                                        return showError(
+                                            "Insufficient balance"
+                                        );
+                                    }
+
+                                    if (bet >= 0) {
+                                        setState((pre) => ({
+                                            ...pre,
+                                            bet: parseInt(bet),
+                                        }));
+                                    }
+                                }}
+                            >
+                                {o.label}
+                            </MultiplierButton>
+                        ))}
+
                         <MultiplierButton
                             onClick={(e) => {
-                                state.bet = parseFloat(state.bet, 10);
-                                o.mul = parseFloat(o.mul, 10);
-                                let bet = state.bet * o.mul;
-                                if (o.mode == "plus") {
-                                    bet = state.bet + o.mul;
-                                }
-                                if (bet > balance) {
-                                    return alert.error("Insufficient balance");
-                                }
-
-                                if (bet >= 0) {
-                                    setState((pre) => ({
-                                        ...pre,
-                                        bet: parseInt(bet),
-                                    }));
-                                }
+                                setState((pre) => ({
+                                    ...pre,
+                                    bet: balance,
+                                }));
                             }}
                         >
-                            {o.label}
+                            max
                         </MultiplierButton>
-                    ))}
-
-                    <MultiplierButton
-                        onClick={(e) => {
-                            setState((pre) => ({
-                                ...pre,
-                                bet: balance,
-                            }));
-                        }}
-                    >
-                        max
-                    </MultiplierButton>
+                    </div>
                 </Input>
 
                 <PrimaryButton

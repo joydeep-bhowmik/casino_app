@@ -69,7 +69,7 @@ export default function UpdateProfileInformation({
 
                     <PrimaryButton
                         disabled={processing}
-                        className="text-black min-w-32 h-12 mt-9"
+                        className="text-black min-w-32 h-9 mt-9"
                     >
                         Save
                     </PrimaryButton>

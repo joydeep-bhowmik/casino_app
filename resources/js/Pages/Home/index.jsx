@@ -1,5 +1,6 @@
 import Layout from "@/Layouts/Layout";
 import { Link } from "@inertiajs/react";
+import { url } from "@/Libs/urls";
 
 export default function Home({ games }) {
     return (

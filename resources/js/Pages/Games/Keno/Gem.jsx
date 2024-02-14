@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { url } from "@/Libs/urls";
 
 export default forwardRef(function Gem({ className, children, ...props }, ref) {
     return (

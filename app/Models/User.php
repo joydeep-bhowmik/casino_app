@@ -58,6 +58,10 @@ class User extends Authenticatable implements Wallet
     {
         return $this->hasMany(Cart::class);
     }
+    function Items()
+    {
+        return $this->hasMany(Item::class);
+    }
 
     function address()
     {

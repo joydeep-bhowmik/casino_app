@@ -11,9 +11,14 @@ class ChatSocket  extends WsController
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
+
+        $user = $from->user;
+
+
+
         foreach ($this->clients as $client) {
             // The sender is not the receiver, send to each client connected
-            $client->send($msg . json_encode($from->data));
+            $client->send('{"text":"' . substr($msg, 0, 100) . '", "time":"' . date('H:i') . '","user":' . json_encode($user) . '}');
         }
     }
 }

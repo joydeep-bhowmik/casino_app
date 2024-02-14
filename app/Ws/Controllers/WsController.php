@@ -17,8 +17,6 @@ class WsController  implements MessageComponentInterface
 {
     protected $clients;
 
-
-
     public final function __construct()
     {
         $this->clients = new SplObjectStorage;
@@ -102,5 +100,26 @@ class WsController  implements MessageComponentInterface
     }
     function withConstruct()
     {
+    }
+
+
+    function success(string $message, array $data = []): array
+    {
+        return $this->response(message: $message, type: 'success', data: $data);
+    }
+
+    function error(string $message, array $data = []): array
+    {
+        return $this->response(message: $message, type: 'error', data: $data);
+    }
+
+
+    function response(string $message, string $type = 'success', array $data = []): array
+    {
+        return ['response' => [
+            'message' => $message,
+            'type' => $type,
+            'data' => $data
+        ]];
     }
 }

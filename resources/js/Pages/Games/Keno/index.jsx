@@ -3,7 +3,6 @@ import Block from "./Block";
 import Gem from "./Gem";
 import Red from "./Red";
 import Green from "./Green";
-import { useAlert } from "react-alert";
 import { useStore } from "@/Store/main";
 import Input from "@/Components/Games/Input";
 import MultiplierButton from "@/Components/Games/MultiplierButton";
@@ -16,18 +15,36 @@ import {
     successSound,
     errorSound,
 } from "@/Libs/sounds";
+import { socket, url } from "@/Libs/urls.js";
+import { useToast } from "@/Components/ui/use-toast";
+import { useRef } from "react";
 
 export default function Keno() {
-    const alert = useAlert();
+    const { toast } = useToast();
+    const connRef = useRef(null);
     const updateBalance = useStore((state) => state.updateBalance);
     const balance = useStore((state) => state.balance);
     const roundId = useStore((state) => state.roundId);
     const updateRoundId = useStore((state) => state.updateRoundId);
 
+    const settings = useStore((state) => state.settings);
+
     const initialTiles = Array.from({ length: 40 }, (_, index) => ({
         number: index + 1,
         type: "block",
     }));
+    const showError = (description) =>
+        toast({
+            title: "Error",
+            description: description,
+            variant: "destructive",
+        });
+
+    const showInfo = (description) =>
+        toast({
+            title: "Info",
+            description: description,
+        });
 
     const [state, setState] = useState({
         tiles: initialTiles,
@@ -73,56 +90,57 @@ export default function Keno() {
     };
 
     //modify
-    const showAll = (mines) => {
-        let tiles = [...initialTiles]; // Create a copy of initialTiles
+    // const showAll = (mines) => {
+    //     let tiles = [...initialTiles]; // Create a copy of initialTiles
 
-        for (let i = 0; i < tiles.length; i++) {
-            tiles[i] = { ...tiles[i], number: i };
-            tiles[i].type = mines.includes(i) ? "red" : "gem";
-        }
+    //     for (let i = 0; i < tiles.length; i++) {
+    //         tiles[i] = { ...tiles[i], number: i };
+    //         tiles[i].type = mines.includes(i) ? "red" : "gem";
+    //     }
 
-        setState((prevState) => ({
-            ...prevState,
-            tiles: tiles,
-            disabled: false,
-            gridLocked: true,
-        }));
-    };
+    //     setState((prevState) => ({
+    //         ...prevState,
+    //         tiles: tiles,
+    //         disabled: false,
+    //         gridLocked: true,
+    //     }));
+    // };
 
     const placeBet = () => {
         resetBlocks();
         if (!state.bet) {
-            return alert.info("Invalid bet amount");
+            settings.sound && errorSound();
+            return showError("Invalid bet amount");
         }
 
         if (state.bet > balance) {
-            return alert.error("Insufficient funds");
+            settings.sound && errorSound();
+            return showError("Insufficient funds");
         }
         if (!["low", "medium", "high"].includes(state.risk)) {
-            return alert.error("Invalid risk");
+            settings.sound && errorSound();
+            return showError("Invalid risk");
         }
         send_message({ type: "start", bet: state.bet, risk: state.risk });
     };
 
-    const conn = new WebSocket(socket("/keno?token=" + get_user_token()));
-
-    conn.onmessage = (res) => {
+    const handleMessage = (res) => {
         res = res.data;
         res = JSON.parse(res);
         console.log("recieved : ", res);
 
         if (res.error) {
-            errorSound();
-            return alert.error(res.error);
+            settings.sound && errorSound();
+            return showError(res.error);
         }
 
         if (res.info) {
-            errorSound();
-            return alert.info(res.info);
+            settings.sound && errorSound();
+            return showInfo(res.info);
         }
 
         if (res.success) {
-            successSound();
+            settings.sound && successSound();
             updateRoundId(res.success.round_id);
 
             setState((pre) => ({
@@ -132,20 +150,21 @@ export default function Keno() {
                 betDisabled: true,
             }));
 
-            return alert.success(res.success.message);
+            return;
         }
 
         if (res.block) {
             change_block({ type: res.block.type, number: res.block.number });
-            if (res.block.type == "gem") successSound();
+            if (res.block.type == "gem") settings.sound && successSound();
         }
 
         if (res.finished) {
-            console.log(res.finished);
-            gameOverSound();
+            settings.sound && gameOverSound();
             updateBalance(res.finished.balance);
-            alert.success(res.finished.payout);
-            alert.success(res.finished.message);
+            toast({
+                title: res.finished.message,
+                description: `${res.finished.payout} points collected`,
+            });
 
             setTimeout(() => {
                 setState((pre) => ({
@@ -160,12 +179,13 @@ export default function Keno() {
     };
 
     const send_message = (json) => {
-        console.log("sending : ", json);
-        clickSound();
-        conn.send(JSON.stringify(json));
+        settings.sound && clickSound();
+        connRef.current.send(JSON.stringify(json));
     };
 
     useEffect(() => {
+        const conn = new WebSocket(socket("/keno?token=" + get_user_token()));
+        conn.onmessage = handleMessage;
         conn.onopen = function (e) {
             setState((pre) => ({
                 ...pre,
@@ -181,15 +201,20 @@ export default function Keno() {
                 betDisabled: true,
             }));
         };
+        connRef.current = conn;
+
+        return () => {
+            connRef.current.close();
+        };
     }, []);
 
     return (
         <GameLayout title="Keno">
-            <div className="w-full md:p-5 md:py-10 grid grid-cols-[auto_auto_auto] place-items-center keno-bg relative">
-                <div className="text-center font-bold space-y-5">
-                    <span className="text-white text-sm">Diamonds</span>
+            <div className="w-full p-3 md:py-10 lg:grid grid-cols-[auto_auto_auto] place-items-center keno-bg relative">
+                <div className="text-center font-bold space-y-5 min-w-10">
+                    <span className="text-white text-sm ">Diamonds</span>
                     <div
-                        className=" w-10 h-10 mx-auto"
+                        className=" lg:w-10 lg:h-10 h-6 w-6 mx-auto"
                         style={{
                             backgroundImage: `url(${url(
                                 "/assets/img/gem.png"
@@ -199,11 +224,11 @@ export default function Keno() {
                     ></div>
                     <span>{state.diamonds.length ?? ""}x</span>
                 </div>
-                <div className="w-full grid grid-cols-8 gap-3 max-w-lg">
+                <div className="w-full grid grid-cols-8 gap-3 max-w-lg mt-5 lg:mt-0">
                     {state.tiles.map((i) => {
                         const type = i.type;
                         var block = "";
-                        const className = "h-14 w-14";
+                        const className = "lg:h-14 lg:w-14 w-8 h-8";
                         switch (type) {
                             case "red":
                                 block = (
@@ -248,7 +273,7 @@ export default function Keno() {
                     })}
                 </div>
             </div>
-            <div className="flex items-center gap-2 mt-5">
+            <div className="flex items-center lg:flex-row flex-col gap-2 mt-5">
                 <Input
                     label="bet amount"
                     prefix="$"
@@ -259,7 +284,7 @@ export default function Keno() {
                     onChange={(e) => {
                         let value = e.target.value;
                         if (value > balance) {
-                            alert.info("Insufficient balance");
+                            showInfo("Insufficient balance");
                             return;
                         }
                         setState((pre) => ({

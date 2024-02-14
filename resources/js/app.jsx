@@ -1,21 +1,13 @@
 import "./bootstrap";
 import "../css/app.css";
-
 import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { inertiaTitle } from "inertia-title";
-import { transitions, positions, Provider as AlertProvider } from "react-alert";
-import AlertTemplate from "react-alert-template-basic";
-// optional configuration
-const options = {
-    // you can also just use 'bottom center'
-    position: positions.BOTTOM_CENTER,
-    timeout: 5000,
-    offset: "30px",
-    // you can also just use 'scale'
-    transition: transitions.SCALE,
-};
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "./Components/ui/toaster";
+
+const queryClient = new QueryClient();
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -32,9 +24,12 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <AlertProvider template={AlertTemplate} {...options}>
-                <App {...props} />
-            </AlertProvider>
+            <>
+                <QueryClientProvider client={queryClient}>
+                    <App {...props} />
+                    <Toaster />
+                </QueryClientProvider>
+            </>
         );
     },
     progress: {

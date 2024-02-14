@@ -23,7 +23,7 @@ class RollSocket extends WsController
         }
 
 
-        if ($data->type == 'start' && isset($data->bet, $data->item, $user) && is_int($data->bet)) {
+        if ($data->type == 'start' && isset($data->bet, $data->item, $user)) {
 
             $game = new RollGameController(bet: $data->bet, item: $data->item, user_id: $user->id);
 

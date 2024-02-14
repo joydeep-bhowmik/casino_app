@@ -1,5 +1,4 @@
 import BottleIcon from "@/Components/Icons/BottleIcon";
-import CartIcon from "@/Components/Icons/CartIcon";
 import FrameIcon from "@/Components/Icons/FrameIcon";
 import GamePadIcon from "@/Components/Icons/GamePadIcon";
 import GiftIcon from "@/Components/Icons/GiftIcon";
@@ -12,57 +11,52 @@ import { Link, router } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import { useStore } from "@/Store/main";
-import Carts from "./Carts";
+import { url } from "@/Libs/urls.js";
+import axios from "axios";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+   
+    DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu";
 
 export default function Header({ user }) {
-    const balance = useStore((state) => state.balance);
-    const updating_balance = useStore((state) => state.updating_balance);
-    const updateBalance = useStore((state) => state.updateBalance);
-    const addBalace = useStore((state) => state.addBalace);
-
-    const [state, setState] = useState({
-        showMobileMenu: false,
-        showNotificationBox: false,
-    });
+    const {
+        balance,
+        updating_balance,
+        addBalace,
+        updateBalance,
+        games,
+        setGames,
+    } = useStore((state) => state);
 
     const avatar = user?.avatar;
 
-    const [tab, setTab] = useState(false);
+    const fetchGames = async () => {
+        try {
+            let response = await axios.post(route("games.all"));
 
-    const changeAuthTab = (tab) => {
-        if (!user) return router.visit(route("login"));
-        setTab(tab);
-    };
-
-    useEffect(() => {
-        if (balance == 0) {
-            updateBalance();
+            setGames(response.data);
+            return response.data;
+        } catch (error) {
+            console.error(error);
         }
+    };
+    useEffect(() => {
+        if (balance == 0) updateBalance();
+        if (!games.length) fetchGames();
     }, []);
 
     return (
         <nav className="max-content-width  flex items-center p-5 lg:p-10  text-[#959595] text-sm">
-            <button
-                className={`lg:hidden ${state.showMobileMenu ? "ring-2" : ""}`}
-                onClick={() => {
-                    setTab("menu");
-                }}
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                    />
-                </svg>
-            </button>
+            <MobileMenu
+                balance={balance}
+                updating_balance={updating_balance}
+                addBalace={addBalace}
+                updateBalance={updateBalance}
+                games={games}
+            />
 
             <Link href={url("/")}>
                 <ApplicationLogo className="h-6 lg:h-8   " />
@@ -75,13 +69,41 @@ export default function Header({ user }) {
                 </div>
 
                 <div className="hidden lg:flex items-center gap-8  uppercase px-4">
-                    <Link
-                        href="/"
-                        className="flex items-center gap-3 hover-underline-animation "
-                    >
-                        <GamePadIcon className="-mt-1 h-6 w-6" />
-                        Games
-                    </Link>
+                    <DropdownMenu className="block">
+                        <DropdownMenuTrigger
+                            disabled={!games.length}
+                            className="flex  items-center gap-3 hover-underline-animation border-0 ring-0 outline-none"
+                        >
+                            <GamePadIcon className="-mt-1 h-6 w-6" />
+                            <div className="flex items-center gap-2 uppercase">
+                                Games
+                                <svg
+                                    width={6}
+                                    height={5}
+                                    viewBox="0 0 6 5"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M6 0.5L3 4.5L0 0.5H6Z"
+                                        fill="#959595"
+                                    />
+                                </svg>
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="border-0 mt-5 ml-5">
+                            {games.map((game) => (
+                                <DropdownMenuItem key={game.id}>
+                                    <Link
+                                        href={`/games/${game.name.toLowerCase()}`}
+                                        className="capitalize"
+                                    >
+                                        {game.name}
+                                    </Link>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <Link
                         href="/"
@@ -104,14 +126,6 @@ export default function Header({ user }) {
             <div className="flex items-center gap-2 lg:gap-5 ml-auto">
                 <button>
                     <NotificationIcon className="-mt-2 h-8 w-8" active={true} />
-                </button>
-
-                <button
-                    onClick={() => {
-                        changeAuthTab("my cart");
-                    }}
-                >
-                    <CartIcon className="h-5 w-5 " />
                 </button>
 
                 <div className="hidden lg:flex gap-5 items-center justify-center font-bold bg-[#141414] rounded-md p-2">
@@ -149,7 +163,9 @@ export default function Header({ user }) {
                     </span>
                 </div>
 
-                <FrameIcon className="hidden lg:block h-6 w-6" />
+                <Link href={route("my.items")}>
+                    <FrameIcon className="hidden lg:block h-6 w-6" />
+                </Link>
 
                 <Link
                     href={route("profile.edit")}
@@ -165,64 +181,6 @@ export default function Header({ user }) {
                         className="object-contain h-full"
                     />
                 </Link>
-
-                {tab ? (
-                    <>
-                        <div
-                            onClick={() => {
-                                setTab(false);
-                            }}
-                            className="bg-black opacity-75 fixed top-0 left-0 right-0 bottom-0 z-50 w-full h-full"
-                        ></div>
-
-                        <div className="side-menu h-full w-full  max-w-lg overflow-y-auto fixed  top-0 bottom-0 right-0 z-50 bg px-5 py-3  border-[#1B1B1B] border-2 rounded-md">
-                            <div className="flex items-center gap-5 py-3 border-b border-b-slate-900">
-                                <button
-                                    className="my-3"
-                                    onClick={() => {
-                                        setTab(false);
-                                    }}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={1.5}
-                                        stroke="currentColor"
-                                        className="w-6 h-6"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M6 18 18 6M6 6l12 12"
-                                        />
-                                    </svg>
-                                </button>
-                                <h2 className="font-semibold text-lg capitalize">
-                                    {tab}
-                                </h2>
-                            </div>
-                            {tab == "my cart" ? (
-                                <Carts carts={user.carts} />
-                            ) : (
-                                ""
-                            )}
-                            {tab == "menu" ? (
-                                <MobileMenu
-                                    open={true}
-                                    balance={balance}
-                                    updating_balance={updating_balance}
-                                    updateBalance={updateBalance}
-                                    addBalace={addBalace}
-                                />
-                            ) : (
-                                ""
-                            )}
-                        </div>
-                    </>
-                ) : (
-                    ""
-                )}
             </div>
         </nav>
     );

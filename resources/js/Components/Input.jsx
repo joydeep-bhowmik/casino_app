@@ -1,19 +1,19 @@
 import { Children, forwardRef, useRef } from "react";
 import cn from "@/Libs/cn";
-export default function Input({
-    type = "price",
-    label = null,
-    wrapperClassName = "",
-    inputClassName = "",
-    className = "",
-    children,
-    prefix = "",
-    suffix = "",
-    error = "",
-    ...props
-}) {
-    const input = useRef(null);
-
+export default forwardRef(function Input(
+    {
+        label = null,
+        wrapperClassName = "",
+        inputClassName = "",
+        className = "",
+        children,
+        prefix = "",
+        suffix = "",
+        error = "",
+        ...props
+    },
+    ref
+) {
     return (
         <div
             className={cn([
@@ -32,15 +32,15 @@ export default function Input({
             ) : (
                 ""
             )}
-            <div className={cn(["mt-3 ", className])}>
-                <div className=" border-[#181818] bg-[#181818] border-2 rounded  flex items-center p-1">
+            <div className={cn([label ? "mt-3 " : "", className])}>
+                <div className=" border-[#181818] bg-[#181818] border-2 rounded-md  flex items-center ">
                     {prefix}
                     <input
                         className={cn([
-                            "text-[#FFF] min-w-[100px] bg-transparent !ring-0 !border-0 w-full hide-input-increment ",
+                            "text-[#FFF] min-w-[100px] bg-transparent !ring-0 !border-0 w-full hide-input-increment text-sm px-2 py-2",
                             inputClassName,
                         ])}
-                        ref={input}
+                        ref={ref}
                         {...props}
                     />
                     {suffix}
@@ -54,4 +54,4 @@ export default function Input({
             )}
         </div>
     );
-}
+});

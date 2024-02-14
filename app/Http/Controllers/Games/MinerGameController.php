@@ -155,7 +155,7 @@ class MinerGameController extends Controller
                 'type' => 'mine',
                 'number' => $number,
                 'reveal_mines' => $data->mines,
-                'payout' => $round->payout . ' points collected',
+                'payout' => $round->payout,
             ]];
         }
     }

@@ -8,7 +8,6 @@ import SmallGem from "./SmallGem";
 import Block from "./Block";
 import RedMine from "./RedMine";
 import DarkGem from "./DarkGem";
-import { useAlert } from "react-alert";
 import { useStore } from "@/Store/main";
 import {
     clickSound,
@@ -16,13 +15,15 @@ import {
     successSound,
     errorSound,
 } from "@/Libs/sounds";
+import { socket, url } from "@/Libs/urls.js";
+import { useRef } from "react";
+import { useToast } from "@/Components/ui/use-toast";
 
 export default function Miner({}) {
-    const alert = useAlert();
-    const updateBalance = useStore((state) => state.updateBalance);
-    const balance = useStore((state) => state.balance);
-    const roundId = useStore((state) => state.roundId);
-    const updateRoundId = useStore((state) => state.updateRoundId);
+    const { toast } = useToast();
+    const connRef = useRef(null);
+    const { updateBalance, balance, roundId, updateRoundId, settings } =
+        useStore((state) => state);
 
     const initialTiles = Array.from({ length: 25 }, (_, index) => ({
         number: index + 1,
@@ -38,7 +39,23 @@ export default function Miner({}) {
         bet: "",
         gridLocked: true,
     });
-    console.log("Current state:", state);
+
+    const showError = (description) => {
+        toast({
+            title: "Error",
+            description: description,
+            variant: "destructive",
+        });
+        settings.sound && errorSound();
+    };
+
+    const showInfo = (description) => {
+        toast({
+            title: "Info",
+            description: description,
+        });
+        settings.sound && errorSound();
+    };
 
     const resetTiles = () => {
         setState((pre) => ({
@@ -50,12 +67,10 @@ export default function Miner({}) {
     const placeBet = () => {
         resetTiles();
         if (!state.bet) {
-            errorSound();
-            return alert.info("Enter bet ammount");
+            return showInfo("Enter bet ammount");
         }
         if (!state.mines) {
-            errorSound();
-            return alert.info("Enter number of mines");
+            return showInfo("Enter number of mines");
         }
         updateBalance(balance - state.bet);
         send_message({
@@ -104,24 +119,20 @@ export default function Miner({}) {
         }));
     };
 
-    const conn = new WebSocket(socket("/miner?token=" + get_user_token()));
-
-    conn.onmessage = function (res) {
+    const handleMessage = function (res) {
         res = JSON.parse(res.data);
         console.log(res, state);
 
         if (res.error) {
-            errorSound();
-            return alert.error(res.error);
+            return showError(res.error);
         }
 
         if (res.info) {
-            errorSound();
-            return alert.info(res.info);
+            return showInfo(res.info);
         }
 
         if (res.success) {
-            successSound();
+            settings.sound && successSound();
             updateRoundId(res.success);
 
             setState((pre) => ({
@@ -129,17 +140,18 @@ export default function Miner({}) {
                 disabled: true,
                 gridLocked: false,
             }));
-            return alert.success("Started");
+            return;
         }
         if (res.block) {
             change_block({ type: res.block.type, number: res.block.number });
 
             if (res.block.type === "mine") {
                 updateBalance();
-                gameOverSound();
-
-                alert.info("Game Over");
-                alert.success(res.block.payout);
+                settings.sound && gameOverSound();
+                toast({
+                    title: "Game Over",
+                    description: `${res.block.payout} points collected`,
+                });
 
                 setTimeout(() => {
                     showAll(res.block.reveal_mines);
@@ -147,18 +159,23 @@ export default function Miner({}) {
 
                 return;
             }
-            successSound();
+            settings.sound && successSound();
         }
     };
 
     const send_message = (props) => {
-        clickSound();
-        console.log(props);
+        settings.sound && clickSound();
+
         const msg = JSON.stringify(props);
-        conn.send(msg);
+        connRef.current.send(msg);
     };
 
     useEffect(() => {
+        connRef.current && connRef.current.close();
+
+        const conn = new WebSocket(socket("/miner?token=" + get_user_token()));
+        conn.onmessage = handleMessage;
+
         conn.onopen = function (e) {
             setState((prev) => ({
                 ...prev,
@@ -172,6 +189,12 @@ export default function Miner({}) {
                     connection: "connected",
                 }));
             }, 3000);
+        };
+
+        connRef.current = conn;
+
+        return () => {
+            connRef.current.close();
         };
     }, []);
 
@@ -189,7 +212,7 @@ export default function Miner({}) {
                             label="bet amount"
                             prefix="$"
                             allowClear={false}
-                            className="flex gap-2  items-center "
+                            className="flex gap-2 flex-wrap lg:flex-nowrap items-center "
                             inputClassName=""
                             value={state.bet}
                             onChange={(e) => {
@@ -255,7 +278,7 @@ export default function Miner({}) {
                                         mines: value,
                                     }));
                                 }
-                                return alert.error("Invalid mines");
+                                return showError("Invalid mines");
                             }}
                             prefix={<SmallMine />}
                         ></Input>
@@ -284,7 +307,10 @@ export default function Miner({}) {
                     }}
                     className="w-full md:p-5 md:py-10 grid place-items-center"
                 >
-                    <div className="w-full grid grid-cols-5 gap-4 max-w-md">
+                    <div
+                        className="w-full s grid grid-cols-5 p-3 gap-4 max-w-md !opacity-100"
+                        disabled={state.gridLocked}
+                    >
                         {state.tiles.map((i) => {
                             const type = i.type;
                             var block = "";
@@ -311,6 +337,7 @@ export default function Miner({}) {
                                     }}
                                     key={i.number}
                                     disabled={state.gridLocked}
+                                    className="!opacity-100 w-16 h-16 mt-3"
                                 >
                                     {block}
                                 </button>

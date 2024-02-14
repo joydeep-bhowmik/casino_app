@@ -4,7 +4,7 @@ use App\Models\Suitcase;
 use Illuminate\Http\Request;
 use function Livewire\Volt\{state, mount, title};
 
-state(['id', 'name', 'slug', 'price', 'compare_at_price', 'image', 'description']);
+state(['id', 'name', 'slug', 'price', 'flag', 'compare_at_price', 'image', 'description', 'valid_flags' => ['featured', 'new', 'hot']]);
 
 title(fn() => 'Suitcase' . ' ' . ($this->id ? 'Update ' . $this->id : 'Create'));
 
@@ -29,6 +29,8 @@ mount(function (Request $request) {
         $this->description = $suitcase->description;
 
         $this->image = $suitcase->image_url;
+
+        $this->flag = $suitcase->flag;
     }
 });
 
@@ -40,6 +42,7 @@ $save = function () {
         'compare_at_price' => 'nullable|numeric',
         'description' => 'nullable',
         'image' => 'required',
+        'flag' => 'nullable|in:' . join(',', $this->valid_flags),
     ]);
 
     $suitcase = new Suitcase();
@@ -59,6 +62,8 @@ $save = function () {
     $suitcase->description = $this->description;
 
     $suitcase->image_url = $this->image;
+
+    $suitcase->flag = $this->flag;
 
     if ($suitcase->save()) {
         return $this->dispatch('alert', type: 'success', message: 'Saved');
@@ -117,6 +122,13 @@ $delete = function () {
                 <x-input type="number" label="Compare At Price" wire:model="compare_at_price" :error="$errors->first('compare_at_price')" />
 
                 <x-editor wire:model='description' :error="$errors->first('description')" />
+
+                <x-select label="Flag" :error="$errors->first('flag')" wire:model="flag">
+                    <option value="">Select</option>
+                    @foreach ($valid_flags as $flag)
+                        <option class="capitalize" value="{{ $flag }}">{{ $flag }}</option>
+                    @endforeach
+                </x-select>
 
             </div>
 

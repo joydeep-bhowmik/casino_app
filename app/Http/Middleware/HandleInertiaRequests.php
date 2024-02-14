@@ -33,7 +33,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user()?->with(['address', 'carts.product'])->first(),
+                'user' => $request->user(),
 
             ],
         ];

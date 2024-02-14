@@ -1,9 +1,9 @@
-export default function PrimaryButton({
-    className = "",
-    disabled,
-    children,
-    ...props
-}) {
+import { forwardRef } from "react";
+
+export default forwardRef(function PrimaryButton(
+    { className = "", disabled, children, ...props },
+    ref
+) {
     return (
         <button
             {...props}
@@ -13,8 +13,9 @@ export default function PrimaryButton({
                 className
             }
             disabled={disabled}
+            ref={ref}
         >
             {children}
         </button>
     );
-}
+});

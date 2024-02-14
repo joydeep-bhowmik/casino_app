@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.1",
         "beyondcode/laravel-websockets": "^1.14",
+        "cjmellor/level-up": "^1.1",
         "doctrine/cache": "2.2.0",
         "doctrine/dbal": "3.7.2",
         "doctrine/deprecations": "1.1.2",
@@ -23,6 +24,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "livewire/volt": "^1.6",
+        "propaganistas/laravel-phone": "^5.1",
         "psr/cache": "3.0.0",
         "pusher/pusher-php-server": "^7.2",
         "stephenjude/laravel-wallet": "^1.0",

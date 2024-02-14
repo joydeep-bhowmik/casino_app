@@ -1,17 +1,24 @@
 import PrimaryButton from "@/Components/PrimaryButton";
-import { Link, useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import Input from "@/Components/Input";
 import Section from "@/Components/Section";
-import { useState } from "react";
-import Select from "@/Components/Games/Select";
+import { url } from "@/Libs/urls";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectTrigger,
+    SelectItem,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function UpdateShippingAddress({
     status,
     className = "",
     countries,
+    address,
 }) {
     const user = usePage().props.auth.user;
-    const address = user.address;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
@@ -23,7 +30,7 @@ export default function UpdateShippingAddress({
             city: address?.city,
             state: address?.state,
             country: address?.country,
-            country_code: address?.country_code,
+            country_code: address?.country_code ? countries[0].code : "",
             phone_number: address?.phone_number,
         });
 
@@ -33,6 +40,7 @@ export default function UpdateShippingAddress({
         patch(route("address.update"));
     };
 
+    console.log(data);
     return (
         <>
             <Section title="Shipping address">
@@ -146,26 +154,38 @@ export default function UpdateShippingAddress({
                                 autoComplete="tel"
                                 error={errors.phone_number}
                                 prefix={
-                                    <select
-                                        className="bg-[#111] rounded !border-0 !ring-0"
-                                        onChange={(e) =>
-                                            setData(
-                                                "country_code",
-                                                e.target.value
-                                            )
+                                    <Select
+                                        onValueChange={(value) =>
+                                            setData("country_code", value)
                                         }
                                         value={data.country_code}
-                                        error={errors.country_code}
                                     >
-                                        {countries.map((country) => (
-                                            <option
-                                                value={country.code}
-                                                key={country.id}
-                                            >
-                                                {country.code}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        <SelectTrigger className="w-fit">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {countries.map((country) =>
+                                                    country?.flag_url ? (
+                                                        <SelectItem
+                                                            value={country.code}
+                                                            key={country.id}
+                                                            className=" flex items-center"
+                                                        >
+                                                            <img
+                                                                src={url(
+                                                                    country?.flag_url
+                                                                )}
+                                                                className="h-4"
+                                                            />
+                                                        </SelectItem>
+                                                    ) : (
+                                                        ""
+                                                    )
+                                                )}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
                                 }
                             />
                         </div>
@@ -173,7 +193,7 @@ export default function UpdateShippingAddress({
 
                     <PrimaryButton
                         disabled={processing}
-                        className="text-black min-w-32 h-12 mt-9"
+                        className="text-black min-w-32 h-9 mt-9"
                     >
                         Save
                     </PrimaryButton>
@@ -181,4 +201,18 @@ export default function UpdateShippingAddress({
             </Section>
         </>
     );
+}
+{
+    /* <select
+    className="bg-[#111] rounded !border-0 !ring-0"
+    onChange={(e) => setData("country_code", e.target.value)}
+    value={data.country_code}
+    error={errors.country_code}
+>
+    {countries.map((country) => (
+        <option value={country.code} key={country.id}>
+            {country.code}
+        </option>
+    ))}
+</select>; */
 }

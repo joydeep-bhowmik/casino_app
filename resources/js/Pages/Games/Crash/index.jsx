@@ -1,5 +1,5 @@
 import GameLayout from "@/Layouts/GameLayout";
-import { useAlert } from "react-alert";
+import { useToast } from "@/Components/ui/use-toast";
 import { useStore } from "@/Store/main";
 import Input from "@/Components/Games/Input";
 import MultiplierButton from "@/Components/Games/MultiplierButton";
@@ -14,13 +14,30 @@ import {
     planeFlyingSound,
     successSound,
 } from "@/Libs/sounds";
+import { socket, url } from "@/Libs/urls.js";
 
 export default function Crash() {
-    const alert = useAlert();
-    const updateBalance = useStore((state) => state.updateBalance);
-    const balance = useStore((state) => state.balance);
-    const roundId = useStore((state) => state.roundId);
-    const updateRoundId = useStore((state) => state.updateRoundId);
+    const { updateBalance, balance, roundId, updateRoundId, settings } =
+        useStore((state) => state);
+    const { toast } = useToast();
+
+    const showError = (description) => {
+        toast({
+            title: "Error",
+            description: description,
+            variant: "destructive",
+        });
+        settings.sound && errorSound();
+    };
+
+    const showInfo = (description) => {
+        toast({
+            title: "Info",
+            description: description,
+        });
+        settings.sound && errorSound();
+    };
+
     const connRef = useRef(null);
 
     const initialState = {
@@ -56,11 +73,11 @@ export default function Crash() {
             res = JSON.parse(res);
             console.log(res);
             if (res.error) {
-                return alert.error(res.error);
+                return showError(res.error);
             }
 
             if (res.info) {
-                return alert.info(res.info);
+                return showInfo(res.info);
             }
 
             if (res.success) {
@@ -73,7 +90,6 @@ export default function Crash() {
                     showPlane: true,
                     ping: true,
                 }));
-                alert.success(res.success.message);
 
                 return;
             }
@@ -101,9 +117,12 @@ export default function Crash() {
                 if (res.cashout) {
                     successSound();
                     updateBalance(res.cashout.balance);
-                    return alert.success(res.cashout.message);
+                    return toast({
+                        title: "Cashout successfull",
+                        description: res.cashout.message,
+                    });
                 }
-                return alert.info("Crashed");
+                return showInfo("Crashed");
             }
         };
 
@@ -129,7 +148,7 @@ export default function Crash() {
     const placeBet = () => {
         if (state.bet > balance) {
             errorSound();
-            return alert.error("Insufficient funds");
+            return showError("Insufficient funds");
         }
         successSound();
         planeFlyingSound();
@@ -260,7 +279,7 @@ export default function Crash() {
                         onChange={(e) => {
                             const value = e.target.value;
                             if (value > balance) {
-                                alert.info("Insufficient balance");
+                                showInfo("Insufficient balance");
                                 return;
                             }
                             setState((pre) => ({
@@ -281,7 +300,7 @@ export default function Crash() {
                                 onClick={() => {
                                     const bet = state.bet + o.mul;
                                     if (bet > balance) {
-                                        alert.error("Insufficient balance");
+                                        showError("Insufficient balance");
                                         return;
                                     }
                                     setState((pre) => ({

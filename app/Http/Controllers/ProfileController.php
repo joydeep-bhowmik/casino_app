@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Country;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Country;
+use Illuminate\Http\Request;
+use App\Models\ShippingAddress;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
 {
@@ -22,6 +23,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Edit/index', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'address' => $request->user()->address,
             'countries' => Country::all()
         ]);
     }
@@ -95,5 +97,56 @@ class ProfileController extends Controller
             $user->avatar = $filename;
             $user->save();
         }
+    }
+
+    function updateAddress(Request $request)
+    {
+        $user = $request->user();
+
+        $country = Country::find($request->country_code);
+
+        $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'address_1' => 'required',
+            'address_2' => 'nullable',
+            'pin_code' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'country' => 'required',
+            'country_code' => 'required',
+            'phone_number' => 'required|phone:' . $country?->name
+        ]);
+
+        $address = ShippingAddress::where('user_id', $user->id)->first();
+
+        if (!$address) {
+
+            $address = new ShippingAddress();
+
+            $address->user_id = $user->id;
+        }
+
+        $address->first_name = $request->first_name;
+
+        $address->last_name = $request->last_name;
+
+        $address->address_1 = $request->address_1;
+
+        $address->address_2 = $request->address_2;
+
+        $address->pin_code = $request->pin_code;
+
+        $address->city = $request->city;
+
+        $address->state = $request->state;
+
+        $address->country = $request->country;
+
+        $address->country_code = $request->country_code;
+
+        $address->phone_number = $request->phone_number;
+
+        $address->save();
     }
 }

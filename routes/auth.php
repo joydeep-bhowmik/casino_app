@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -11,8 +14,6 @@ use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\ShippingController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -23,9 +24,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/profile/update-avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
 
-    Route::patch('/update-address', [ShippingController::class, 'updateAddress'])->name('address.update');
-
-    Route::post('sell-items', [CartController::class, 'sellItems'])->name('sell.items');
+    Route::patch('/update-address', [ProfileController::class, 'updateAddress'])->name('address.update');
 });
 
 

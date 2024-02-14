@@ -12,8 +12,6 @@ class CrashGameController extends Controller
 {
     private $uid = 'crash';
 
-
-
     public function __construct(public int $bet, public int $user_id)
     {
     }

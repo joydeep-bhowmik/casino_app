@@ -1,5 +1,8 @@
 import axios from "axios";
 import { create } from "zustand";
+import { api, url } from "@/Libs/urls.js";
+import { cashSound } from "@/Libs/sounds";
+import { getCookie, setCookie } from "@/Libs/cookies";
 
 export const useStore = create((set) => ({
     balance: 0,
@@ -23,6 +26,7 @@ export const useStore = create((set) => ({
     updateBalance: (balance = null) => {
         if (balance) {
             set({ balance: balance });
+            cashSound();
         } else {
             set({ updating_balance: true });
             axios
@@ -36,5 +40,17 @@ export const useStore = create((set) => ({
                     set({ updating_balance: false });
                 });
         }
+    },
+    settings: JSON.parse(getCookie("settings")) || { sound: false },
+
+    updateSettings: (newSettings) => {
+        set({ settings: newSettings });
+        setCookie("settings", JSON.stringify(newSettings), 30);
+    },
+    games: [],
+    setGames: (games) => {
+        set((state) => ({
+            games: [...new Set([...state.games, ...games])],
+        }));
     },
 }));
