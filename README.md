@@ -1,4 +1,5 @@
-# Casino App Setup Guide
+## ⚠️ This project is incomplete and was left midway through development. Some games are fully functional, while others may be unfinished or unstable.
+# Casino App Setup Guide 
 
 To successfully run the casino app, follow these organized steps :
 
